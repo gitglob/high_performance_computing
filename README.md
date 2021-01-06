@@ -1,3 +1,12 @@
-# 02614 High Performance Computing
+# high_performance_computing
 
-Repository for the DTU January course 02614 High Performance Computing.
+Remember to switch compilers from the default (module load gcc)
+
+Right now I started using a native way of implementing the matrices (double pointers) in C language, so our makefile is Makefile.gcc. We might want to use suncc later, but it would mean changes in "Makefile.suncc" and in the way of calling dgemm
+
+Command to make our library: "make -f Makefile.gcc"
+Command to call run the shell script: "bsub < mm_batch.sh"
+
+There is also collect_batch file that as far as I understand can be used to run the calculations in a loop.
+
+README file provided from the proffesor explains how to modify the shell script in order to run specific functions with specific settings.
