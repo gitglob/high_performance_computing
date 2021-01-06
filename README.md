@@ -9,4 +9,4 @@ Command to call run the shell script: "bsub < mm_batch.sh"
 
 There is also collect_batch file that as far as I understand can be used to run the calculations in a loop.
 
-README file provided from the proffesor explains how to modify the shell script in order to run specific functions with specific settings.
+README file provided by the teachers explains how to modify the shell script in order to run specific functions with specific settings.
