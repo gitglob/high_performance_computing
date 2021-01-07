@@ -103,11 +103,9 @@ void matmult_blk(int m, int n, int k, double **A, double **B, double **C, int bs
     for (MM = 0; MM < m; MM += bs) {
         for (KK = 0; KK < k; KK += bs) {
             for (NN = 0; NN < n; NN += bs) {
-
-                for (kk = KK; kk < fmin(KK + bs, k); kk++) {
-                    for (mm = MM; mm < fmin(MM + bs, m); mm++) {
+                for (mm = MM; mm < fmin(MM + bs, m); mm++) {
+                    for (kk = KK; kk < fmin(KK + bs, k); kk++) {
                         for (nn = NN; nn < fmin(NN + bs, n); nn++)
-
                             C[mm][nn] += A[mm][kk] * B[kk][nn];
                     }
                 }
