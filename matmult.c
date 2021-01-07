@@ -8,7 +8,7 @@ void matmult_nat(int m, int n, int k, double **A, double **B, double **C) {
 
 // Matrix multiplication with the use of CBLAS_DGEMM
 void matmult_lib(int m, int n, int k, double **A, double **B, double **C) {
-    cblas_dgemm(CblasRowMajor,CblasNoTrans,CblasNoTrans,m,n,k,1,*A,k,*B,n,0,*C,m);
+    cblas_dgemm(CblasRowMajor,CblasNoTrans,CblasNoTrans,m,n,k,1,*A,k,*B,n,0,*C,n);
 }
 
 // Matrix multiplication in order m->n->k
