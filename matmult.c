@@ -2,6 +2,8 @@
 #include "math.h"
 #include "matmult.h"
 
+#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
+
 // Basic version of matrix multiplication
 void matmult_nat(int m, int n, int k, double **A, double **B, double **C) {
     matmult_mnk(m, n, k, A, B, C);
@@ -92,22 +94,13 @@ void matmult_knm(int m, int n, int k, double **A, double **B, double **C) {
 
 // Blocking version of matrix multiplication in order ->m->k->n
 void matmult_blk(int m, int n, int k, double **A, double **B, double **C, int bs) {
-    int i, j;       // indices for filling C with 0
-    int MM, KK, NN; // iterators over blocks
-    int mm, kk, nn; // iterators inside blocks
-
-    for (i = 0; i < m; i++)
-        for (j = 0; j < n; j++)
-            C[mm][nn] = 0.0;
-
-    for (MM = 0; MM < m; MM += bs) {
-        for (KK = 0; KK < k; KK += bs) {
-            for (NN = 0; NN < n; NN += bs) {
-                for (mm = MM; mm < fmin(MM + bs, m); mm++) {
-                    for (kk = KK; kk < fmin(KK + bs, k); kk++) {
-                        for (nn = NN; nn < fmin(NN + bs, n); nn++)
-                            C[mm][nn] += A[mm][kk] * B[kk][nn];
-                    }
+    int mm, nn, kk1, kk2;
+    for (kk1 = 0; kk1 < k; kk1 +=bs){
+        for (mm = 0; mm < m; mm++) {
+            for(kk2=0;kk2<MIN(k-kk1, bs);kk2++){
+                for (nn = 0; nn < n; nn++)  {
+                    if (kk1+kk2 == 0) C[mm][nn] = 0;
+                    C[mm][nn] += A[mm][kk1+kk2]*B[kk1+kk2][nn];
                 }
             }
         }
