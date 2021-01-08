@@ -1,0 +1,96 @@
+     0.586    204.962 0 # matmult_mnk
+     2.344    892.805 0 # matmult_mnk
+     9.375   1422.509 0 # matmult_mnk
+    58.594   1366.778 0 # matmult_mnk
+   131.836   1400.983 0 # matmult_mnk
+   234.375   1378.552 0 # matmult_mnk
+   937.500   1195.912 0 # matmult_mnk
+  5859.375    997.881 0 # matmult_mnk
+ 23437.500   1065.874 0 # matmult_mnk
+ 93750.000    680.099 248 # matmult_mnk
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n-62-21-93>
+Subject: Job 8697306: <mm_batch> in cluster <dcc> Done
+
+Job <mm_batch> was submitted from host <n-62-30-1> by user <s203269> in cluster <dcc> at Thu Jan  7 22:05:31 2021
+Job was executed on host(s) <n-62-21-93>, in queue <hpcintro>, as user <s203269> in cluster <dcc> at Thu Jan  7 22:14:03 2021
+</zhome/68/a/154632> was used as the home directory.
+</zhome/68/a/154632/Desktop/HPC/Assignments/assignment_1> was used as the working directory.
+Started at Thu Jan  7 22:14:03 2021
+Terminated at Thu Jan  7 22:14:57 2021
+Results reported at Thu Jan  7 22:14:57 2021
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#!/bin/bash
+# 02614 - High-Performance Computing, January 2018
+#
+# batch script to run matmult on a decidated server in the hpcintro
+# queue
+#
+# Author: Bernd Dammann <bd@cc.dtu.dk>
+#
+#BSUB -J mm_batch
+#BSUB -o Ofast_optimized_outputs/mnk_%J.out
+#BSUB -e errors/Error_%J.err
+#BSUB -q hpcintro
+#BSUB -n 1
+#BSUB -W 15
+#BSUB -R "rusage[mem=2048]"
+
+# define the driver name to use
+# valid values: matmult_c.studio, matmult_f.studio, matmult_c.gcc or
+# matmult_f.gcc
+#
+EXECUTABLE=matmult_c.gcc
+
+# define the mkn values in the MKN variable
+#
+SIZES="5 10 20 50 75 100 200 500 1000 2000"
+
+# define the permutation type in PERM
+#
+PERM="mnk"
+
+# uncomment and set a reasonable BLKSIZE for the blk version
+#
+# BLKSIZE=1
+
+# enable(1)/disable(0) result checking
+export MATMULT_COMPARE=1
+export MATMULT_RESULTS=0
+
+# start the collect command with the above settings
+for S in $SIZES
+do
+    ./$EXECUTABLE $PERM $S $S $S $BLKSIZE
+done
+
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   53.84 sec.
+    Max Memory :                                 107 MB
+    Average Memory :                             72.67 MB
+    Total Requested Memory :                     2048.00 MB
+    Delta Memory :                               1941.00 MB
+    Max Swap :                                   -
+    Max Processes :                              4
+    Max Threads :                                5
+    Run time :                                   54 sec.
+    Turnaround time :                            566 sec.
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <errors/Error_8697306.err> for stderr output of this job.
+
