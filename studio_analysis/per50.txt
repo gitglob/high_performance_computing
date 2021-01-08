@@ -1,0 +1,20 @@
+Functions sorted by metric: Exclusive Total CPU Time
+
+Exclusive        Inclusive        Exclusive         Exclusive         Exclusive           Exclusive       Exclusive         Exclusive                Exclusive         Exclusive     
+Total CPU Time   Total CPU Time   CPU Cycles Time   L1 D-cache Hits   L1 D-cache Misses   L2 Cache Hits   L2 Cache Misses   L3 Cache Hit w/o Snoop   L3 Cache Misses   DTLB Misses   Name
+sec.             sec.                                                                                                                                                                
+18.003           18.003           15.225            72123249661       21343434            21342670        0                 0                        0                 0             <Total>
+ 3.002            3.002            2.497            11423566712        4270039             4270814        0                 0                        0                 0             matmult_knm
+ 3.002            3.002            2.548            11702948881        8537054             4267042        0                 0                        0                 0             matmult_nkm
+ 3.002            3.002            2.496            11407412396              0             4270199        0                 0                        0                 0             matmult_nmk
+ 2.992            2.992            2.587            12738604857        4268554             4267626        0                 0                        0                 0             matmult_mkn
+ 2.992            2.992            2.509            12222039510              0                   0        0                 0                        0                 0             matmult_mnk
+ 2.982            2.982            2.588            12628677305        4267787             4266989        0                 0                        0                 0             matmult_kmn
+ 0.020            0.020            0.                         0              0                   0        0                 0                        0                 0             getrusage
+ 0.010            0.010            0.                         0              0                   0        0                 0                        0                 0             <static>@0x2d009 (<libcollector.so>)
+ 0.              18.003            0.                         0              0                   0        0                 0                        0                 0             __libc_start_main
+ 0.               0.010            0.                         0              0                   0        0                 0                        0                 0             dlopen
+ 0.              18.003            0.                         0              0                   0        0                 0                        0                 0             main
+ 0.              18.003            0.                         0              0                   0        0                 0                        0                 0             mflops
+ 0.               0.020            0.                         0              0                   0        0                 0                        0                 0             xtime
+

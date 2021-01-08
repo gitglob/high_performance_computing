@@ -1,0 +1,26 @@
+Functions sorted by metric: Exclusive Total CPU Time
+
+Exclusive        Inclusive        Exclusive         Exclusive         Exclusive           Exclusive       Exclusive         Exclusive                Exclusive         Exclusive     
+Total CPU Time   Total CPU Time   CPU Cycles Time   L1 D-cache Hits   L1 D-cache Misses   L2 Cache Hits   L2 Cache Misses   L3 Cache Hit w/o Snoop   L3 Cache Misses   DTLB Misses   Name
+sec.             sec.                                                                                                                                                                
+425.808          425.808          361.707           1054409161222     47169448152         13865692563     33300290715       30708669049              2587852857        1465934       <Total>
+ 95.737           95.737           79.530            168750743688     15764662830          3930775405     11836459435       10973918298               865154364        1465934       matmult_knm
+ 88.762           88.762           76.492            168580392758     15774990045          3984651915     11790703780       10910473321               875044755              0       matmult_nkm
+ 85.100           85.100           72.077            168357872977      7768828646          2717551304      5049003847        4258428763               789902651              0       matmult_mnk
+ 68.968           68.968           59.513            176281141300      7710488050          3095875076      4613373482        4560456380                51938171              0       matmult_nmk
+ 42.750           42.750           36.480            183864060094        60823779            49728869         6745650           2722670                 4211089              0       matmult_kmn
+ 42.720           42.720           36.320            183937534982        59753638            57192322         4004521           2669617                 1401353              0       matmult_mkn
+  1.701            1.701            1.254              4583335762        29901164            29917672               0                 0                       0              0       <static>@0x58a7ad (<libsatlas.so.3.10>)
+  0.040            0.040            0.026                54079661               0                   0               0                 0                  200474              0       compare_mat
+  0.020            0.020            0.                          0               0                   0               0                 0                       0              0       init_matrix
+  0.010            0.010            0.014                       0               0                   0               0                 0                       0              0       <static>@0x62dbda (<libsatlas.so.3.10>)
+  0.               1.711            0.                          0               0                   0               0                 0                       0              0       ATL_dgemm
+  0.               1.711            0.                          0               0                   0               0                 0                       0              0       ATL_dmmJIK
+  0.               1.701            0.                          0               0                   0               0                 0                       0              0       ATL_dmmJIK2
+  0.               0.010            0.                          0               0                   0               0                 0                       0              0       ATL_drow2blkT2_a1
+  0.             425.808            0.                          0               0                   0               0                 0                       0              0       __libc_start_main
+  0.               1.711            0.                          0               0                   0               0                 0                       0              0       cblas_dgemm
+  0.             425.808            0.                          0               0                   0               0                 0                       0              0       main
+  0.               1.711            0.                          0               0                   0               0                 0                       0              0       matmult_ref
+  0.             424.037            0.                          0               0                   0               0                 0                       0              0       mflops
+

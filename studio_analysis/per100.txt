@@ -1,0 +1,20 @@
+Functions sorted by metric: Exclusive Total CPU Time
+
+Exclusive        Inclusive        Exclusive         Exclusive         Exclusive           Exclusive       Exclusive         Exclusive                Exclusive         Exclusive     
+Total CPU Time   Total CPU Time   CPU Cycles Time   L1 D-cache Hits   L1 D-cache Misses   L2 Cache Hits   L2 Cache Misses   L3 Cache Hit w/o Snoop   L3 Cache Misses   DTLB Misses   Name
+sec.             sec.                                                                                                                                                                
+18.023           18.023           15.455            74419870427       93887002            89622036        1334597           1335846                  0                 0             <Total>
+ 3.012            3.012            2.600            13039274380        8537479             8537933              0                 0                  0                 0             matmult_kmn
+ 3.002            3.002            2.574            12028489997       21335923            21335238              0                 0                  0                 0             matmult_knm
+ 3.002            3.002            2.597            13060050161        4269575             4268852              0                 0                  0                 0             matmult_mkn
+ 3.002            3.002            2.510            12269417063       25619347            25611595              0                 0                  0                 0             matmult_mnk
+ 3.002            3.002            2.573            12009410899       29857522            25602748        1334597           1335846                  0                 0             matmult_nkm
+ 3.002            3.002            2.587            12013227927        4267156             4265670              0                 0                  0                 0             matmult_nmk
+ 0.               0.               0.                         0              0                   0              0                 0                  0                 0             <static>@0x2d009 (<libcollector.so>)
+ 0.               0.               0.                         0              0                   0              0                 0                  0                 0             __collector_reallocVSize
+ 0.              18.023            0.                         0              0                   0              0                 0                  0                 0             __libc_start_main
+ 0.               0.               0.                         0              0                   0              0                 0                  0                 0             dlopen
+ 0.              18.023            0.                         0              0                   0              0                 0                  0                 0             main
+ 0.              18.023            0.                         0              0                   0              0                 0                  0                 0             mflops
+ 0.               0.               0.013                      0              0                   0              0                 0                  0                 0             sigprocmask
+
