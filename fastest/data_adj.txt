@@ -1,0 +1,29 @@
+     0.586    190.838 0 # matmult_mkn
+     2.344    823.130 0 # matmult_mkn
+     9.375   2109.183 0 # matmult_mkn
+    14.648   2449.077 0 # matmult_mkn
+    21.094   2671.872 0 # matmult_mkn
+    28.711   3040.550 0 # matmult_mkn
+    58.594   3626.290 0 # matmult_mkn
+    84.375   3757.159 0 # matmult_mkn
+   114.844   3502.019 0 # matmult_mkn
+   150.000   3599.536 0 # matmult_mkn
+   189.844   3679.890 0 # matmult_mkn
+   234.375   3786.144 0 # matmult_mkn
+   283.594   3772.452 0 # matmult_mkn
+   337.500   3796.524 0 # matmult_mkn
+   527.344   3858.821 0 # matmult_mkn
+   937.500   3852.902 0 # matmult_mkn
+  2109.375   4056.037 0 # matmult_mkn
+  3750.000   4109.311 0 # matmult_mkn
+  8437.500   4164.240 0 # matmult_mkn
+ 15000.000   4189.615 0 # matmult_mkn
+ 16933.594   4182.919 0 # matmult_mkn
+ 18984.375   4183.325 0 # matmult_mkn
+ 23437.500   4188.111 0 # matmult_mkn
+ 33750.000   4211.164 0 # matmult_mkn
+ 52734.375   4213.195 0 # matmult_mkn
+ 75937.500   4056.198 20 # matmult_mkn
+ 93750.000   3466.076 248 # matmult_mkn
+135000.000   2620.839 784 # matmult_mkn
+183750.000   2343.857 1968 # matmult_mkn
