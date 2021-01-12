@@ -16,6 +16,8 @@
 
 #define N_DEFAULT 100
 
+void gauss_seidel(int n, double ***pDouble, int max, double tolerance);
+
 int
 main(int argc, char *argv[]) {
 
@@ -45,12 +47,7 @@ main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    /*
-     *
-     * fill in your code here 
-     *
-     *
-     */
+    gauss_seidel(N, u, iter_max, tolerance);
 
     // dump  results if wanted 
     switch(output_type) {
