@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#BSUB -J poisson
+#BSUB -J poisson_j
 #BSUB -o results_poisson_j_%J/poisson_%J.out
 #BSUB -q hpcintro
 #BSUB -n 1
@@ -26,5 +26,5 @@ output_type=4  #ouput type
 
 for i in "${sizes[@]}"
 do
-    ./$EXECUTABLE $i $iter_max $tolerance $start_T $output_type > ${OUTDIR}/"$i".txt
+    ./$EXECUTABLE $i $iter_max $tolerance $start_T $output_type >> ${OUTDIR}/"${EXECUTABLE}".txt
 done
