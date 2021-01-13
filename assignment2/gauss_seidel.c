@@ -7,7 +7,7 @@
 #include "alloc3d.h"
 #include "gauss_seidel.h"
 
-int gauss_seidel_seq(double ***u, double ***f, int N, int delta, int iter_max, double tolerance) {
+int gauss_seidel_seq(double ***u, double ***f, int N, int delta, int iter_max, double *tolerance) {
     int i, j, k;
     int iter = 0;
     double d = 10000000000;
@@ -16,7 +16,7 @@ int gauss_seidel_seq(double ***u, double ***f, int N, int delta, int iter_max, d
     double delta_2 = delta*delta;
     double div_val = 1.0/6.0;
 
-    while (d > tolerance && iter < iter_max) {
+    while (d > *tolerance && iter < iter_max) {
         d = 0.0;
         for (i = 1; i < N - 1; ++i) {
             for (j = 1; j < N - 1; ++j) {
@@ -39,5 +39,6 @@ int gauss_seidel_seq(double ***u, double ***f, int N, int delta, int iter_max, d
         d = sqrt(d);
         iter++;
     }
+    *tolerance = d;
     return iter;
 }

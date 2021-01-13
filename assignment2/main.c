@@ -33,7 +33,7 @@ main(int argc, char *argv[]) {
     char	output_filename[FILENAME_MAX];
     double 	***u = NULL;
     // Our variables start
-    double ***f = NULL;
+    double ***f = NULL, ***u_old = NULL;
     int iterations_done;
     // Our variables end
 
@@ -53,21 +53,30 @@ main(int argc, char *argv[]) {
     }
     // Our code start
     double delta = 2.0 / (N-2);
-    f = d_malloc_3d(N, N, N);
+    if ( (f = d_malloc_3d(N, N, N)) == NULL ) {
+        perror("array f: allocation failed");
+        exit(-1);
+    }
+    if ( (u_old = d_malloc_3d(N, N, N)) == NULL ) {
+        perror("array u_old: allocation failed");
+        exit(-1);
+    }
+
     u_init(u, N, start_T);
     f_init(f, N);
 
     #ifdef _GAUSS_SEIDEL
-    iterations_done = gauss_seidel_seq(u, f, N, delta, iter_max, tolerance);
+    iterations_done = gauss_seidel_seq(u, f, N, delta, iter_max, &tolerance);
     #endif
 
-    // #ifdef _JACOBI
-    
-    // #endif
+    #ifdef _JACOBI
+    u_init(u_old, N, start_T);
+    iterations_done = jacobi(u, u_old, f, N, delta, iter_max, &tolerance);
+    #endif
 
    
     
-    printf("iterations done: %d", iterations_done);
+    printf("iterations done: %d tolerance: %f \n", iterations_done, tolerance);
     // OUR CODE END
 
     // dump  results if wanted 
