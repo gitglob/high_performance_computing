@@ -14,9 +14,11 @@
 #include "gauss_seidel.h"
 #endif
 
+#include "init.h"
+
 #define N_DEFAULT 100
 
-void gauss_seidel(int n, double ***pDouble, int max, double tolerance, double start_T);
+// void gauss_seidel(int n, double ***pDouble, int max, double tolerance, double start_T);
 
 int
 main(int argc, char *argv[]) {
@@ -30,7 +32,10 @@ main(int argc, char *argv[]) {
     char    *output_ext    = "";
     char	output_filename[FILENAME_MAX];
     double 	***u = NULL;
-
+    // Our variables start
+    double ***f = NULL;
+    int iterations_done;
+    // Our variables end
 
     /* get the paramters from the command line */
     N         = atoi(argv[1]);	// grid size
@@ -46,8 +51,24 @@ main(int argc, char *argv[]) {
         perror("array u: allocation failed");
         exit(-1);
     }
+    // Our code start
+    double delta = 2.0 / (N-2);
+    f = d_malloc_3d(N, N, N);
+    u_init(u, N, start_T);
+    f_init(f, N);
 
-    gauss_seidel(N, u, iter_max, tolerance, start_T);
+    #ifdef _GAUSS_SEIDEL
+    iterations_done = gauss_seidel_seq(u, f, N, delta, iter_max, tolerance);
+    #endif
+
+    // #ifdef _JACOBI
+    
+    // #endif
+
+   
+    
+    printf("iterations done: %d", iterations_done);
+    // OUR CODE END
 
     // dump  results if wanted 
     switch(output_type) {
