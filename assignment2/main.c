@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include "alloc3d.h"
 #include "print.h"
+#include <omp.h>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 #ifdef _JACOBI
 #include "jacobi.h"
@@ -35,6 +39,7 @@ main(int argc, char *argv[]) {
     // Our variables start
     double ***f = NULL, ***u_old = NULL;
     int iterations_done;
+    double start_time, end_time;
     // Our variables end
 
     /* get the paramters from the command line */
@@ -66,17 +71,23 @@ main(int argc, char *argv[]) {
     f_init(f, N);
 
     #ifdef _GAUSS_SEIDEL
+    start_time = omp_get_wtime();
     iterations_done = gauss_seidel_seq(u, f, N, delta, iter_max, &tolerance);
+    end_time = omp_get_wtime();
     #endif
 
     #ifdef _JACOBI
     u_init(u_old, N, start_T);
+    start_time = omp_get_wtime();
     iterations_done = jacobi(u, u_old, f, N, delta, iter_max, &tolerance);
+    end_time = omp_get_wtime();
     #endif
 
    
-    
-    printf("iterations done: %d tolerance: %f \n", iterations_done, tolerance);
+    // Uncomment for descriptive output
+    printf("iterations done: %d tolerance: %f time: %f\n", iterations_done, tolerance, end_time-start_time);
+    // Uncomment for output that can be used in plotting
+    // printf("%d %f %f\n", iterations_done, tolerance, end_time-start_time);
     // OUR CODE END
 
     // dump  results if wanted 
