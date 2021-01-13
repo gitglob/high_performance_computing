@@ -1,0 +1,82 @@
+iterations done: 17524 tolerance: 0.099992 time: 184.544948
+
+real	3m4.579s
+user	3m4.549s
+sys	0m0.029s
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n-62-21-75>
+Subject: Job 9089453: <jac> in cluster <dcc> Done
+
+Job <jac> was submitted from host <n-62-30-3> by user <s203269> in cluster <dcc> at Wed Jan 13 20:43:07 2021
+Job was executed on host(s) <24*n-62-21-75>, in queue <hpcintro>, as user <s203269> in cluster <dcc> at Wed Jan 13 20:43:08 2021
+</zhome/68/a/154632> was used as the home directory.
+</zhome/68/a/154632/Desktop/HPC/Assignments/assignment2> was used as the working directory.
+Started at Wed Jan 13 20:43:08 2021
+Terminated at Wed Jan 13 20:46:13 2021
+Results reported at Wed Jan 13 20:46:13 2021
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#!/bin/bash
+# 02614 - High-Performance Computing, January 2021
+
+#BSUB -J jac
+#BSUB -o jac_output/jac_%J.out
+#BSUB -q hpcintro
+#BSUB -n 24
+#BSUB -R "rusage[mem=2048]"
+#BSUB -W 15
+
+# define the driver name to use
+#
+EXECUTABLE=poisson_j
+
+# define the number of threads
+#
+THREADS=1
+#THREADS="1 2 4 8 16"
+
+# define the grid size
+#
+GRID_SIZE=150
+
+# define max iterations
+#
+MAX_ITER=18000
+
+# define the tolerance
+#
+TOLERANCE=0.1
+
+# define start for inner grid points
+#
+T_START=0
+
+# start the collect command with the above settings
+for T in $THREADS
+do
+    time OMP_NUM_THREADS=$T ./$EXECUTABLE $GRID_SIZE $MAX_ITER $TOLERANCE $T_START
+done
+
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   185.01 sec.
+    Max Memory :                                 82 MB
+    Average Memory :                             82.00 MB
+    Total Requested Memory :                     49152.00 MB
+    Delta Memory :                               49070.00 MB
+    Max Swap :                                   -
+    Max Processes :                              4
+    Max Threads :                                5
+    Run time :                                   185 sec.
+    Turnaround time :                            186 sec.
+
+The output (if any) is above this job summary.
+
