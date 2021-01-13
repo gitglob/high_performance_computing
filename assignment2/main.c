@@ -16,7 +16,7 @@
 
 #define N_DEFAULT 100
 
-void gauss_seidel(int n, double ***pDouble, int max, double tolerance);
+void gauss_seidel(int n, double ***pDouble, int max, double tolerance, double start_T);
 
 int
 main(int argc, char *argv[]) {
@@ -27,7 +27,7 @@ main(int argc, char *argv[]) {
     double	start_T;
     int		output_type = 0;
     char	*output_prefix = "poisson_res";
-    char        *output_ext    = "";
+    char    *output_ext    = "";
     char	output_filename[FILENAME_MAX];
     double 	***u = NULL;
 
@@ -47,7 +47,7 @@ main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    gauss_seidel(N, u, iter_max, tolerance);
+    gauss_seidel(N, u, iter_max, tolerance, start_T);
 
     // dump  results if wanted 
     switch(output_type) {

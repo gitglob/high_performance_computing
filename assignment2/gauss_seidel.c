@@ -35,7 +35,6 @@ void gauss_seidel_seq(double ***u, double ***f, int N, int delta, int iter_max, 
 }
 
 void gauss_seidel(int N, double ***u, int iter_max, double tolerance, double start_T) {
-    // fill in your code here
 
     double delta = 1.0 / N;
     double ***f = d_malloc_3d(N, N, N);
