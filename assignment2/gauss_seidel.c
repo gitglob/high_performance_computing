@@ -26,10 +26,11 @@ void gauss_seidel_seq(double ***u, double ***f, int N, int delta, int iter_max, 
                     u[i][j][k] = u_new / 6.0;
                     norm_diff = u[i][j][k] - u_old;
 
-                    d += sqrt(norm_diff * norm_diff);
+                    d += norm_diff * norm_diff;
                 }
             }
         }
+        d = sqrt(d);
         iter++;
     }
 }
