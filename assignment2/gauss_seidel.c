@@ -42,3 +42,44 @@ int gauss_seidel_seq(double ***u, double ***f, int N, int delta, int iter_max, d
     *tolerance = d;
     return iter;
 }
+
+int gauss_seidel_paral(double ***u, double ***f, int N, int delta, int iter_max, double *tolerance) {
+    int i, j, k;
+    int iter = 0;
+    double d = 1000;
+
+
+    double delta_2 = delta*delta;
+    double div_val = 1.0/6.0;
+
+    while (iter < iter_max) {
+        d = 0.0;
+        #pragma omp parallel default(none) \
+                shared(N,f,delta_2,div_val,u,iter) \
+                private(i,j,k) \
+                reduction(+:d)
+        {
+            #pragma omp for ordered(2) schedule(static,1)
+            for (i = 1; i < N - 1; ++i) {
+                for (j = 1; j < N - 1; ++j) {
+                    #pragma omp ordered depend(sink:i-1,j) depend(sink:i,j-1) 
+                    for (k = 1; k < N - 1; ++k) {
+                        // Make a delta square - done
+                        double u_new = u[i - 1][j][k] + u[i + 1][j][k]
+                                    + u[i][j - 1][k] + u[i][j + 1][k]
+                                    + u[i][j][k - 1] + u[i][j][k + 1]
+                                    + delta_2 * f[i][j][k];
+
+                        // Make it a mult - done
+                        u[i][j][k] = u_new * div_val;
+                    }
+                    #pragma omp ordered depend(source)
+                }
+            }
+        }
+        iter++;
+        
+    }
+    *tolerance = d;
+    return iter;
+}
