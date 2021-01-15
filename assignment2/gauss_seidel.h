@@ -8,5 +8,7 @@ int gauss_seidel_seq(double ***u, double ***f, int N, int delta, int iter_max, d
 
 int gauss_seidel_paral(double ***u, double ***f, int N, int delta, int iter_max, double *tolerance);
 
+int gauss_seidel_paral_while(double ***u, double ***f, int N, int delta, int iter_max, double *tolerance);
+
 
 #endif
