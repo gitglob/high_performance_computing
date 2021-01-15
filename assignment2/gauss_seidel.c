@@ -2,11 +2,9 @@
  *
  */
 #include <math.h>
-
-#include "init.h"
-#include "alloc3d.h"
 #include "gauss_seidel.h"
 
+// Sequential version of Gauss-Seidel method
 int gauss_seidel_seq(double ***u, double ***f, int N, int delta, int iter_max, double *tolerance) {
     int i, j, k;
     int iter = 0;
@@ -41,6 +39,7 @@ int gauss_seidel_seq(double ***u, double ***f, int N, int delta, int iter_max, d
     return iter;
 }
 
+// Basic parallelization of Gauss-Seldel method
 int gauss_seidel_paral(double ***u, double ***f, int N, int delta, int iter_max, double *tolerance) {
     int i, j, k;
     int iter = 0;
@@ -79,6 +78,7 @@ int gauss_seidel_paral(double ***u, double ***f, int N, int delta, int iter_max,
     return iter;
 }
 
+// Parallelized version of Jacobi method with while inside parallel region
 int gauss_seidel_paral_while(double ***u, double ***f, int N, int delta, int iter_max, double *tolerance) {
     int i, j, k;
     int iter = 0;

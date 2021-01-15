@@ -56,7 +56,9 @@ main(int argc, char *argv[]) {
         perror("array u: allocation failed");
         exit(-1);
     }
-    // Our code start
+
+    // ########### OUR CODE START #############
+
     double delta = 2.0 / (N-2);
     if ( (f = d_malloc_3d(N, N, N)) == NULL ) {
         perror("array f: allocation failed");
@@ -67,28 +69,53 @@ main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    u_init(u, N, start_T);
-    f_init(f, N);
+    // Uncomment for sequential initialization
+    // u_init_seq(u, N, start_T);
+    // f_init_seq(f, N);
+    // u_init_seq(u_old, N, start_T);
 
-    #ifdef _GAUSS_SEIDEL
-    start_time = omp_get_wtime();
-    iterations_done = gauss_seidel_seq(u, f, N, delta, iter_max, &tolerance);
-    end_time = omp_get_wtime();
-    #endif
 
     #ifdef _JACOBI
-    u_init(u_old, N, start_T);
+    // Uncomment for Jacobi parallel initialization
+    u_init_jac(u, N, start_T);
+    f_init_jac(f, N);
+    u_init_jac(u_old, N, start_T);
+
     start_time = omp_get_wtime();
-    iterations_done = jacobi(u, u_old, f, N, delta, iter_max, &tolerance);
+
+    // Uncoment to choose version of Jacobi algorithm
+    // iterations_done = jacobi_seq(u, u_old, f, N, delta, iter_max, &tolerance);
+    // iterations_done = jacobi_paral(u, u_old, f, N, delta, iter_max, &tolerance);
+    iterations_done = jacobi_paral_while(u, u_old, f, N, delta, iter_max, &tolerance);
+    
+    end_time = omp_get_wtime();
+
+    // u_old de-allocation, specific for Jacobi method
+    free(u_old);
+    #endif
+
+    #ifdef _GAUSS_SEIDEL
+    // Uncomment for Gauss-Seidel parallel initialization
+    u_init_gauss(u, N, start_T);
+    f_init_gauss(f, N);
+
+    start_time = omp_get_wtime();
+
+    // Uncoment to choose version of Gauss-Seidel algorithm
+    // iterations_done = gauss_seidel_seq(u, f, N, delta, iter_max, &tolerance);
+    // iterations_done = gauss_seidel_paral(u, f, N, delta, iter_max, &tolerance);
+    iterations_done = gauss_seidel_paral_while(u, f, N, delta, iter_max, &tolerance);
+
     end_time = omp_get_wtime();
     #endif
 
-   
+
     // Uncomment for descriptive output
     printf("iterations done: %d tolerance: %f time: %f\n", iterations_done, tolerance, end_time-start_time);
     // Uncomment for output that can be used in plotting
     // printf("%d %f %f\n", iterations_done, tolerance, end_time-start_time);
-    // OUR CODE END
+
+    // ########### OUR CODE END ##########
 
     // dump  results if wanted 
     switch(output_type) {
@@ -115,5 +142,8 @@ main(int argc, char *argv[]) {
     // de-allocate memory
     free(u);
 
+    // Added de-allocation
+    free(f);
+    
     return(0);
 }
