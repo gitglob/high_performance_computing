@@ -5,12 +5,12 @@ Most important files with code changes:
 
 main.c - changes added to include matrix initialization, memory de-allocation and function calls to methods
 
-init.c, init.h - matrix initalization with 3 methods: sequenital, parallel for Jacobi, 
+init.c, init.h - matrix initialization with 3 methods: sequential, parallel for Jacobi,
     parallel for Gauss-Seidel. The only difference between the last two 
     is the parameter in schedule(static)
 
 jacobi.c, jacobi.h - 4 Jacobi methods created: sequential, 2 parallel 
-    and one non-working version that was checked togheter with a few TAs 
+    and one non-working version that was checked together with a few TAs
     and nobody could find an error.
 
 gauss_seidel.c, gauss_seidel.h - 3 Gauss-Seidel methods created: sequential and 2 parallel
@@ -25,12 +25,12 @@ either Jacobi parallel with while inside the parallel region together with initi
 or same version but for Gauss-Seidel algorithm.
 
 To change the setup, one has to uncomment desired lines of code in the main file, 
-per istructions in the file.
+per instructions in the file.
 
 Currently, algorithm prints information about 3 parameters in a descriptive manner: 
 number of executed iterations, "tolerance" parameter that defines the change between last two iterations 
 and execution time of just the method alone. 
-It is possble to change the printed parameters to be just numbers witout description, by uncommenting a line in main.c
+It is possible to change the printed parameters to be just numbers without description, by uncommenting a line in main.c
 
 IMPORTANT - In currently chosen version of Gauss-Seidel algorithm, the tolerance parameter will not return true value 
 as it is not calculated in any of the parallel versions of this method.

@@ -12,14 +12,14 @@ OBJS_GS	= $(MAIN_GS) gauss_seidel.o
 
 # options and settings for the GCC compilers
 #
-CC	= suncc
+CC	= gcc
 DEFS	= 
-OPT	= -g -fast
+OPT	= -g -O3
 IPO	= 
 ISA	= 
 CHIP	= 
 ARCH	= 
-PARA	= -xopenmp
+PARA	= -fopenmp
 CFLAGS	= $(DEFS) $(ARCH) $(OPT) $(ISA) $(CHIP) $(IPO) $(PARA) $(XOPTS)
 LDFLAGS = -lm 
 
