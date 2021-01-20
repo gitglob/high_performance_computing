@@ -2,7 +2,7 @@
 #include <helper_cuda.h>
 
 __global__
-void gpu_jacobi_1(double *u, double *u_old, double *f, int N, double *temp_pointer, int delta_2, double div_val) {
+void gpu_jacobi_1(double ***u, double ***u_old, double ***f, int N, double *temp_pointer, int delta_2, double div_val) {
 
     for (i = 1; i < N - 1; ++i) {
         for (j = 1; j < N - 1; ++j) {
@@ -21,7 +21,7 @@ void gpu_jacobi_1(double *u, double *u_old, double *f, int N, double *temp_point
     checkCudaErrors(cudaDeviceSynchronize());
 }
 
-void run_gpu_jacobi_1(double *u, double *u_old, double *f, int N, int delta, int iter_max, int *iter) {
+void run_gpu_jacobi_1(double ***u, double ***u_old, double ***f, int N, int delta, int iter_max, int *iter) {
 
     double delta_2 = delta * delta;
     double div_val = 1.0 / 6.0;
