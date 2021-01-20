@@ -55,7 +55,7 @@ void gpu_jacobi_2(double *u, double *u_old, double *f, int N, double *temp_point
     }
 }
 
-void run_gpu_jacobi_2(double *u, double *u_old, double *f, int N, int delta, int iter_max, int *iter, int dim_grid, int dim_block) {
+void run_gpu_jacobi_2(double *u, double *u_old, double *f, int N, int delta, int iter_max, int *iter, dim3 dim_grid, dim3 dim_block) {
 
     double delta_2 = delta * delta;
     double div_val = 1.0 / 6.0;
