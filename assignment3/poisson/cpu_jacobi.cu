@@ -3,9 +3,8 @@
  */
 extern "C" {
 
-    int cpu_jacobi(double ***u, double ***u_old, double ***f, int N, int delta, int iter_max) {
+    void cpu_jacobi(double ***u, double ***u_old, double ***f, int N, int delta, int iter_max, int *iter) {
         int i, j, k;
-        int iter = 0;
         double delta_2 = delta*delta;
         double div_val = 1.0/6.0;
         double ***temp_pointer;
@@ -39,6 +38,5 @@ extern "C" {
                 }
             }
         }
-        return iter;
     }
 }
