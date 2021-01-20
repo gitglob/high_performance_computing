@@ -3,6 +3,7 @@
 #include "init.h"
 #include "transfer3d_gpu.h"
 #include "alloc3d_gpu.h"
+#include "alloc3d.h"
 
 #define GPU_RUN 0
 #define N_DEFAULT 100
