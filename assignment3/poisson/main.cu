@@ -15,6 +15,8 @@
 #define DEVICE_TO_HOST 2
 #define DEVICE_TO_DEVICE 3
 
+#define BLOCK_SIZE 16
+
 extern "C" {
     #include <stdio.h>
     #include <stdlib.h>
@@ -91,8 +93,11 @@ int main(int argc, char *argv[]) {
             transfer_3d_to_1d(u_1d_gpu, u_gpu, N, N, N, DEVICE_TO_DEVICE);
             transfer_3d_to_1d(f_1d_gpu, f_gpu, N, N, N, DEVICE_TO_DEVICE);
 
+            dim3 dim_grid = dim3(N, N, N);
+            dim3 dim_block = dim3(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+
             start_time = omp_get_wtime();
-            gpu_jacobi_2(u_1d_gpu, u_old_1d_gpu, f_1d_gpu, N, delta, iter_max, &iter);
+            run_gpu_jacobi_2(u_1d_gpu, u_old_1d_gpu, f_1d_gpu, N, delta, iter_max, &iter, dim_grid, dim_block);
             end_time = omp_get_wtime();
             printf("GPU: iterations done: %d time: %f\n", iter, end_time - start_time);
 
