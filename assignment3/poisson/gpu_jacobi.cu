@@ -27,5 +27,4 @@ void gpu_jacobi(double ***u, double ***u_old, double ***f, int N, int delta, int
             iter++;
         }
     }
-    return iter;
 }
