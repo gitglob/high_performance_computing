@@ -30,3 +30,12 @@ $(TARGET): $(LIBOBJS)
 
 clean:
 	/bin/rm -f $(TARGET) $(LIBOBJS)
+
+
+main.o: main.cu gpu_jacobi.h cpu_jacobi.h init.h transfer3d_gpu.h alloc3d_gpu.h alloc3d.h
+gpu_jacobi.o: gpu_jacobi.h
+cpu_jacobi.o: cpu_jacobi.h
+init.o: init.h
+transfer3d_gpu.o: transfer3d_gpu.h
+alloc3d_gpu.o: alloc3d_gpu.h
+alloc3d.o: alloc3d.h

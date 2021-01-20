@@ -5,6 +5,14 @@
 #include "alloc3d_gpu.h"
 #include "alloc3d.h"
 
+extern "C" {
+    #include <stdio.h>
+    #include <stdlib.h>
+    #ifdef _OPENMP
+    #include <omp.h>
+    #endif
+}
+
 #define GPU_RUN 0
 #define N_DEFAULT 100
 
@@ -18,23 +26,15 @@
 
 #define BLOCK_SIZE 16
 
-extern "C" {
-    #include <stdio.h>
-    #include <stdlib.h>
-    #ifdef _OPENMP
-    #include <omp.h>
-    #endif
-}
-
 int main(int argc, char *argv[]) {
     int N = N_DEFAULT;
     int iter = 0;
     int iter_max = 1000;
-    double start_T;
+    double start_T = 0;
 
-    N = atoi(argv[1]);    // grid size
-    iter_max = atoi(argv[2]);  // max. no. of iterations
-    start_T = atof(argv[3]);  // start T for all inner grid points
+//    N = atoi(argv[1]);    // grid size
+//    iter_max = atoi(argv[2]);  // max. no. of iterations
+//    start_T = atof(argv[3]);  // start T for all inner grid points
 
     double ***u_old = NULL;
     double ***u = NULL;
