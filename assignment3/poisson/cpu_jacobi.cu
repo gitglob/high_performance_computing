@@ -14,7 +14,7 @@ extern "C" {
                 private(i,j,k)
         {
 
-            while (iter < iter_max) {
+            while (*iter < iter_max) {
                 #pragma omp for
                 for (i = 1; i < N - 1; ++i) {
                     for (j = 1; j < N - 1; ++j) {
