@@ -20,6 +20,8 @@ INCLUDES = -I$(CUDA_PATH)/include \
 SOFLAGS = -shared
 XLIBS	= -lcublas
 
+all: $(TARGET)
+
 $(TARGET): $(LIBOBJS) $(LIBOBJS)
 	$(CXX) -o $@ $(CXXFLAGS) $(SOFLAGS) $(INCLUDES) $^
 
