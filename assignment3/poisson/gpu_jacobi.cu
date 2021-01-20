@@ -3,7 +3,7 @@
 
 __global__
 void gpu_jacobi_1(double ***u, double ***u_old, double ***f, int N, double *temp_pointer, int delta_2, double div_val) {
-
+    int i, j, k;
     for (i = 1; i < N - 1; ++i) {
         for (j = 1; j < N - 1; ++j) {
             for (k = 1; k < N - 1; ++k) {
