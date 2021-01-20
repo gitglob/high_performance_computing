@@ -2,20 +2,14 @@
 #include <helper_cuda.h>
 
 __global__
-int gpu_jacobi(double ***u, double ***u_old, double ***f, int N, int delta, int iter_max) {
+void gpu_jacobi(double ***u, double ***u_old, double ***f, int N, int delta, int iter_max) {
     int i, j, k;
     int iter = 0;
     double delta_2 = delta*delta;
     double div_val = 1.0/6.0;
     double ***temp_pointer;
 
-	#pragma omp parallel default(none) \
-            shared(iter_max, N, f, delta_2, div_val, u, u_old, temp_pointer, iter) \
-            private(i,j,k)
-    {
-
         while (iter < iter_max) {
-            #pragma omp for
             for (i = 1; i < N - 1; ++i) {
                 for (j = 1; j < N - 1; ++j) {
                     for (k = 1; k < N - 1; ++k) {
@@ -27,15 +21,10 @@ int gpu_jacobi(double ***u, double ***u_old, double ***f, int N, int delta, int 
                 }
             }
 
-            // Pointer redo
-            #pragma omp barrier
-            #pragma omp single
-            {
-                temp_pointer = u;
-                u = u_old;
-                u_old = temp_pointer;
-                iter++;
-            }
+            temp_pointer = u;
+            u = u_old;
+            u_old = temp_pointer;
+            iter++;
         }
     }
     return iter;
