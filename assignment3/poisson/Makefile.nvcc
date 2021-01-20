@@ -22,7 +22,7 @@ SOFLAGS = -shared
 all: $(TARGET)
 
 $(TARGET): $(LIBOBJS)
-	$(CXX) -o $@ $(CXXFLAGS) $(SOFLAGS) $(INCLUDES)
+	$(CXX) -o $@ $(CXXFLAGS) $(SOFLAGS) $(INCLUDES) $^
 
 .SUFFIXES: .cu
 .cu.o:
