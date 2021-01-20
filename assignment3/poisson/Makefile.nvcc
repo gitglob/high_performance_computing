@@ -1,7 +1,7 @@
 TARGET	= poisson
 
-LIBSRCS	= main.cu alloc3d_gpu.cu transfer3d_gpu.cu cpu_jacobi.cu gpu_jacobi.cu init.cu
-LIBOBJS	= main.o alloc3d_gpu.o transfer3d_gpu.o cpu_jacobi.o gpu_jacobi.o init.o
+LIBSRCS	= main.cu alloc3d.cu alloc3d_gpu.cu transfer3d_gpu.cu cpu_jacobi.cu gpu_jacobi.cu init.cu
+LIBOBJS	= main.o alloc3d.o alloc3d_gpu.o transfer3d_gpu.o cpu_jacobi.o gpu_jacobi.o init.o
 
 OPT	= -g -O3
 PIC = -fpic
@@ -18,12 +18,11 @@ INCLUDES = -I$(CUDA_PATH)/include \
 	       -I$(CUDA_PATH)/samples/common/inc
 
 SOFLAGS = -shared
-XLIBS	= -lcublas
 
 all: $(TARGET)
 
-$(TARGET): $(LIBOBJS) $(LIBOBJS)
-	$(CXX) -o $@ $(CXXFLAGS) $(SOFLAGS) $(INCLUDES) $^
+$(TARGET): $(LIBOBJS)
+	$(CXX) -o $@ $(CXXFLAGS) $(SOFLAGS) $(INCLUDES)
 
 .SUFFIXES: .cu
 .cu.o:
