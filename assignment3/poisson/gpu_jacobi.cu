@@ -28,7 +28,7 @@ void run_gpu_jacobi_1(double ***u, double ***u_old, double ***f, int N, int delt
     double ***temp_pointer;
 
     while (*iter < iter_max) {
-        gpu_jacobi_1_thread<<<1, 1>>>(u, u_old, f, N, temp_pointer, delta_2, div_val);
+        gpu_jacobi_1<<<1, 1>>>(u, u_old, f, N, temp_pointer, delta_2, div_val);
         iter++;
     }
 }
