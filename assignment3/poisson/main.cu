@@ -93,9 +93,9 @@ int main(int argc, char *argv[]) {
 
             int size = N * N * N * sizeof(double);
 
-            cudaMalloc((void**)&u_old_1d_gpu, size_f);
-            cudaMalloc((void**)&u_1d_gpu, size_f);
-            cudaMalloc((void**)&f_1d_gpu, size_f);
+            cudaMalloc((void**)&u_old_1d_gpu, size);
+            cudaMalloc((void**)&u_1d_gpu, size);
+            cudaMalloc((void**)&f_1d_gpu, size);
 
             transfer_3d_to_1d(u_old_1d_gpu, u_old_gpu, N, N, N, cudaMemcpyDeviceToDevice);
             transfer_3d_to_1d(u_1d_gpu, u_gpu, N, N, N, cudaMemcpyDeviceToDevice);
