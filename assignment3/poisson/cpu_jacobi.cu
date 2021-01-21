@@ -10,7 +10,7 @@ void cpu_jacobi(double ***u, double ***u_old, double ***f, int N, int delta, int
             private(i,j,k)
     {
 
-        while (*iter < iter_max) {
+        while (temp_iter < iter_max) {
             #pragma omp for
             for (i = 1; i < N - 1; ++i) {
                 for (j = 1; j < N - 1; ++j) {
