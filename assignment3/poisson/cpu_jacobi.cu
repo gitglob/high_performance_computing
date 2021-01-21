@@ -1,11 +1,12 @@
 void cpu_jacobi(double ***u, double ***u_old, double ***f, int N, int delta, int iter_max, int *iter) {
+    int temp_iter = *iter;
     int i, j, k;
     double delta_2 = delta*delta;
     double div_val = 1.0/6.0;
     double ***temp_pointer;
 
     #pragma omp parallel default(none) \
-            shared(iter_max, N, f, delta_2, div_val, u, u_old, temp_pointer, iter) \
+            shared(iter_max, N, f, delta_2, div_val, u, u_old, temp_pointer, temp_iter) \
             private(i,j,k)
     {
 
@@ -29,8 +30,9 @@ void cpu_jacobi(double ***u, double ***u_old, double ***f, int N, int delta, int
                 temp_pointer = u;
                 u = u_old;
                 u_old = temp_pointer;
-                iter++;
+                temp_iter++;
             }
         }
     }
+    *iter = temp_iter;
 }

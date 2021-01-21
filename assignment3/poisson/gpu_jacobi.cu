@@ -18,7 +18,6 @@ void gpu_jacobi_1(double ***u, double ***u_old, double ***f, int N, double ***te
     temp_pointer = u;
     u = u_old;
     u_old = temp_pointer;
-
 }
 
 void run_gpu_jacobi_1(double ***u, double ***u_old, double ***f, int N, int delta, int iter_max, int *iter) {
@@ -30,7 +29,7 @@ void run_gpu_jacobi_1(double ***u, double ***u_old, double ***f, int N, int delt
     while (*iter < iter_max) {
         gpu_jacobi_1<<<1, 1>>>(u, u_old, f, N, temp_pointer, delta_2, div_val);
         checkCudaErrors(cudaDeviceSynchronize());
-        iter++;
+        (*iter)++;
     }
 }
 
@@ -62,6 +61,6 @@ void run_gpu_jacobi_2(double *u, double *u_old, double *f, int N, int delta, int
     while (*iter < iter_max) {
         gpu_jacobi_2<<<dim_grid, dim_block>>>(u, u_old, f, N, temp_pointer, delta_2, div_val);
         checkCudaErrors(cudaDeviceSynchronize());
-        iter++;
+        (*iter)++;
     }
 }

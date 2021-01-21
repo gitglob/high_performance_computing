@@ -5,6 +5,8 @@
 #include "alloc3d_gpu.h"
 #include "alloc3d.h"
 
+#include <cuda_runtime.h>
+
 extern "C" {
     #include <stdio.h>
     #include <stdlib.h>
@@ -13,28 +15,22 @@ extern "C" {
     #endif
 }
 
-#define GPU_RUN 0
-#define N_DEFAULT 100
-
 #define DEVICE_0 0
 #define DEVICE_1 1
-
-#define HOST_TO_HOST 0
-#define HOST_TO_DEVICE 1
-#define DEVICE_TO_HOST 2
-#define DEVICE_TO_DEVICE 3
 
 #define BLOCK_SIZE 16
 
 int main(int argc, char *argv[]) {
-    int N = N_DEFAULT;
+    int N = 100;
     int iter = 0;
-    int iter_max = 1000;
+    int iter_max = 100;
     double start_T = 0;
+    int gpu_run = 0;
 
-//    N = atoi(argv[1]);    // grid size
-//    iter_max = atoi(argv[2]);  // max. no. of iterations
-//    start_T = atof(argv[3]);  // start T for all inner grid points
+    N = atoi(argv[1]);    // grid size
+    iter_max = atoi(argv[2]);  // max. no. of iterations
+    start_T = atof(argv[3]);  // start T for all inner grid points
+    gpu_run = atof(argv[4]);  // start T for all inner grid points
 
     double ***u_old = NULL;
     double ***u = NULL;
@@ -52,7 +48,7 @@ int main(int argc, char *argv[]) {
 
     double start_time, end_time;
 
-    if (!GPU_RUN) { // CPU run
+    if (!gpu_run) { // CPU run
         start_time = omp_get_wtime();
         cpu_jacobi(u, u_old, f, N, delta, iter_max, &iter);
         end_time = omp_get_wtime();
@@ -69,11 +65,15 @@ int main(int argc, char *argv[]) {
     double ***u_gpu = NULL;
     double ***f_gpu = NULL;
 
-    transfer_3d(u_old_gpu, u_old, N, N, N, HOST_TO_DEVICE);
-    transfer_3d(u_gpu, u, N, N, N, HOST_TO_DEVICE);
-    transfer_3d(f_gpu, f, N, N, N, HOST_TO_DEVICE);
+    u_old_gpu = d_malloc_3d_gpu(N, N, N);
+    u_gpu = d_malloc_3d_gpu(N, N, N);
+    f_gpu = d_malloc_3d_gpu(N, N, N);
 
-    switch (GPU_RUN) { // GPU run
+    transfer_3d(u_old_gpu, u_old, N, N, N, cudaMemcpyHostToDevice);
+    transfer_3d(u_gpu, u, N, N, N, cudaMemcpyHostToDevice);
+    transfer_3d(f_gpu, f, N, N, N, cudaMemcpyHostToDevice);
+
+    switch (gpu_run) { // GPU run
         case 0:
             return 0;
 
@@ -90,9 +90,9 @@ int main(int argc, char *argv[]) {
             double *u_1d_gpu = NULL;
             double *f_1d_gpu = NULL;
 
-            transfer_3d_to_1d(u_old_1d_gpu, u_old_gpu, N, N, N, DEVICE_TO_DEVICE);
-            transfer_3d_to_1d(u_1d_gpu, u_gpu, N, N, N, DEVICE_TO_DEVICE);
-            transfer_3d_to_1d(f_1d_gpu, f_gpu, N, N, N, DEVICE_TO_DEVICE);
+            transfer_3d_to_1d(u_old_1d_gpu, u_old_gpu, N, N, N, cudaMemcpyDeviceToDevice);
+            transfer_3d_to_1d(u_1d_gpu, u_gpu, N, N, N, cudaMemcpyDeviceToDevice);
+            transfer_3d_to_1d(f_1d_gpu, f_gpu, N, N, N, cudaMemcpyDeviceToDevice);
 
             dim3 dim_grid = dim3(N, N, N);
             dim3 dim_block = dim3(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
@@ -102,9 +102,9 @@ int main(int argc, char *argv[]) {
             end_time = omp_get_wtime();
             printf("GPU: iterations done: %d time: %f\n", iter, end_time - start_time);
 
-            transfer_3d_from_1d(u_old_gpu, u_old_1d_gpu, N, N, N, DEVICE_TO_DEVICE);
-            transfer_3d_from_1d(u_gpu, u_1d_gpu, N, N, N, DEVICE_TO_DEVICE);
-            transfer_3d_from_1d(f_gpu, f_1d_gpu, N, N, N, DEVICE_TO_DEVICE);
+            transfer_3d_from_1d(u_old_gpu, u_old_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
+            transfer_3d_from_1d(u_gpu, u_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
+            transfer_3d_from_1d(f_gpu, f_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
 
             cudaFree(u_old_1d_gpu);
             cudaFree(u_1d_gpu);
