@@ -1,6 +1,6 @@
 TARGET	= libmatmult.so
-LIBSRCS	= 
-LIBOBJS	= 
+LIBSRCS	= matmult.cu
+LIBOBJS	= matmult.o
 
 OPT	= -g -O3
 PIC = -fpic
@@ -17,7 +17,7 @@ INCLUDES = -I$(CUDA_PATH)/include \
 	       -I$(CUDA_PATH)/samples/common/inc
 
 SOFLAGS = -shared
-XLIBS	= -lcublas
+XLIBS	= -lcublas -L /usr/lib64/atlas -lsatlas
 
 $(TARGET): $(LIBOBJS)
 	$(CXX) -o $@ $(CXXFLAGS) $(SOFLAGS) $(INCLUDES) $^ $(XLIBS)
