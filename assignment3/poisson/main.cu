@@ -67,12 +67,12 @@ int main(int argc, char *argv[]) {
 
     cudaSetDevice(DEVICE_0);
 
-    printf("Allocation 3d on gpu");
+    printf("Allocation 3d on gpu\n");
     u_old_gpu = d_malloc_3d_gpu(N, N, N);
     u_gpu = d_malloc_3d_gpu(N, N, N);
     f_gpu = d_malloc_3d_gpu(N, N, N);
 
-    printf("Transferring to host");
+    printf("Transferring to host\n");
     transfer_3d(u_old_gpu, u_old, N, N, N, cudaMemcpyHostToDevice);
     transfer_3d(u_gpu, u, N, N, N, cudaMemcpyHostToDevice);
     transfer_3d(f_gpu, f, N, N, N, cudaMemcpyHostToDevice);
@@ -82,14 +82,14 @@ int main(int argc, char *argv[]) {
             return 0;
 
         case 1:
-            printf("Case 1");
+            printf("Case 1\n");
             start_time = omp_get_wtime();
             run_gpu_jacobi_1(u_gpu, u_old_gpu, f_gpu, N, delta, iter_max, &iter);
             end_time = omp_get_wtime();
             printf("GPU %d: iterations done: %d time: %f\n", gpu_run, iter, end_time - start_time);
 
         case 2:
-            printf("Case 2");
+            printf("Case 2\n");
             cudaSetDevice(DEVICE_0);
             double *u_old_1d_gpu = NULL;
             double *u_1d_gpu = NULL;
