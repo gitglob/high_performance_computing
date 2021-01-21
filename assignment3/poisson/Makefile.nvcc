@@ -1,4 +1,4 @@
-TARGET	= poisson
+TARGET	= jacobi.nvcc
 
 LIBSRCS	= main.cu alloc3d.cu alloc3d_gpu.cu transfer3d_gpu.cu gpu_jacobi.cu init.cu cpu_jacobi.cu 
 LIBOBJS	= main.o alloc3d.o alloc3d_gpu.o transfer3d_gpu.o gpu_jacobi.o init.o cpu_jacobi.o 
