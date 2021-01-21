@@ -1,5 +1,5 @@
 #BSUB -J jacobi
-#BSUB -o jacobi_%J.out
+#BSUB -o results/jacobi_%J.out
 #BSUB -q hpcintrogpu
 #BSUB -n 1
 #BSUB -R "rusage[mem=2048]"
