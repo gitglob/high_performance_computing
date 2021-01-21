@@ -1,10 +1,3 @@
-#!/bin/bash
-# 02614 - High-Performance Computing, January 2018
-# 
-# batch script to run matmult on a decidated server in the hpcintro
-# queue
-#
-# Author: Bernd Dammann <bd@cc.dtu.dk>
 #
 #BSUB -J mm_batch
 #BSUB -o mm_batch_%J.out

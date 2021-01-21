@@ -123,7 +123,7 @@ extern "C" {
     // Neighbour to the bottom version
     // Kernel for matrix multiplication for gpu version 4
     __global__ void kernel_gpu4(int m, int n, int k, double *A, double *B, double *C) {
-        int kk, elemCounter;
+        int kk;
         // int col = blockIdx.x * blockDim.x + threadIdx.x;
         // int row = blockIdx.y * blockDim.y + threadIdx.y;
         int nn = blockIdx.x * blockDim.x + threadIdx.x;
@@ -134,9 +134,10 @@ extern "C" {
             for (kk = 0; kk < k; kk++){
                 if (kk == 0) C[mm*5*n + nn] = 0;
                 C[mm*5*n + nn] += A[mm*5*k +kk]*B[kk*n + nn];
-                for (elemCounter = 1; elemCounter<5; elemCounter++){
-                    if((mm*5)+elemCounter<m) C[(mm*5 + elemCounter)*n + nn] += A[(mm*5 + elemCounter)*k +kk]*B[kk*n + nn];
-                }
+                if((mm*5)+1<m) C[(mm*5 + 1)*n + nn] += A[(mm*5 + 1)*k +kk]*B[kk*n + nn];
+                if((mm*5)+2<m) C[(mm*5 + 2)*n + nn] += A[(mm*5 + 2)*k +kk]*B[kk*n + nn];
+                if((mm*5)+3<m) C[(mm*5 + 3)*n + nn] += A[(mm*5 + 3)*k +kk]*B[kk*n + nn];
+                if((mm*5)+4<m) C[(mm*5 + 4)*n + nn] += A[(mm*5 + 4)*k +kk]*B[kk*n + nn];
                 
             } 
         }
