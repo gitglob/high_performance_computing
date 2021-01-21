@@ -1,11 +1,11 @@
-TARGET	= libmatmult.so
-LIBSRCS	= 
-LIBOBJS	= 
+TARGET	= jacobi.nvcc
+
+LIBSRCS	= main.cu alloc3d.cu alloc3d_gpu.cu transfer3d_gpu.cu gpu_jacobi.cu init.cu cpu_jacobi.cu
+LIBOBJS	= main.o alloc3d.o alloc3d_gpu.o transfer3d_gpu.o gpu_jacobi.o init.o cpu_jacobi.o
 
 OPT	= -g -O3
-PIC = -fpic
+PIC =
 OMP   = -fopenmp
-XPIC  = -Xcompiler -fpic
 XOPT  = -Xptxas=-v -lineinfo #-G # only use -G for debugging / profiler
 XARCH = -arch=sm_80
 
@@ -16,15 +16,25 @@ CUDA_PATH ?= /appl/cuda/11.1
 INCLUDES = -I$(CUDA_PATH)/include \
 	       -I$(CUDA_PATH)/samples/common/inc
 
-SOFLAGS = -shared
-XLIBS	= -lcublas
+SOFLAGS =
+
+all: $(TARGET)
 
 $(TARGET): $(LIBOBJS)
-	$(CXX) -o $@ $(CXXFLAGS) $(SOFLAGS) $(INCLUDES) $^ $(XLIBS)
+	$(CXX) -o $@ $(CXXFLAGS) $(SOFLAGS) $(INCLUDES) $^
 
 .SUFFIXES: .cu
 .cu.o:
 	$(CXX) -o $*.o -c $*.cu $(CXXFLAGS) $(SOFLAGS) $(INCLUDES)
 
 clean:
-	/bin/rm -f $(TARGET) $(LIBOBJS) 
+	/bin/rm -f $(TARGET) $(LIBOBJS)
+
+
+main.o: main.cu gpu_jacobi.h init.h transfer3d_gpu.h alloc3d_gpu.h alloc3d.h cpu_jacobi.h
+gpu_jacobi.o: gpu_jacobi.h
+cpu_jacobi.o: cpu_jacobi.h
+init.o: init.h
+transfer3d_gpu.o: transfer3d_gpu.h
+alloc3d_gpu.o: alloc3d_gpu.h
+alloc3d.o: alloc3d.h
