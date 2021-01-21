@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
                     //printf("f_gpu[%d] = %f\n",i,hfh[i]);
                 }
             }
-            
+
 
             };
 
@@ -143,8 +143,8 @@ int main(int argc, char *argv[]) {
             transfer_3d_to_1d(u_1d_gpu, u_gpu, N, N, N, cudaMemcpyDeviceToDevice);
             transfer_3d_to_1d(f_1d_gpu, f_gpu, N, N, N, cudaMemcpyDeviceToDevice);
 
-            dim_grid = dim3(N/(BLOCK_SIZE*BLOCK_SIZE*BLOCK_SIZE), 1, 1); // N/512
-            dim_block = dim3(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE); // 8*8*8=512
+            dim_grid = dim3(N/BLOCK_SIZE, N/BLOCK_SIZE, N/BLOCK_SIZE);
+            dim_block = dim3(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
 
             start_time = omp_get_wtime();
             run_gpu_jacobi_2(u_1d_gpu, u_old_1d_gpu, f_1d_gpu, N, delta, iter_max, &iter, dim_grid, dim_block);
@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
             cudaDeviceEnablePeerAccess(1, 0);
 
             size = N * N * N * sizeof(double);
-            dim_grid = dim3(N/2, N, N);
+            dim_grid = dim3(N/BLOCK_SIZE, N/BLOCK_SIZE, N/BLOCK_SIZE);
             dim_block = dim3(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
 
             // both devices
@@ -194,14 +194,6 @@ int main(int argc, char *argv[]) {
             transfer_3d_to_1d(u_old_1d_gpu, u_old_gpu, N, N, N, cudaMemcpyDeviceToDevice);
             transfer_3d_to_1d(u_1d_gpu, u_gpu, N, N, N, cudaMemcpyDeviceToDevice);
             transfer_3d_to_1d(f_1d_gpu, f_gpu, N, N, N, cudaMemcpyDeviceToDevice);
-
-            // DEBUG
-            double *h_u_1d_gpu = NULL;
-            cudaMallocHost((void**)&h_u_1d_gpu, size);
-            cudaMemcpy(h_u_1d_gpu, u_1d_gpu, N*N*N * sizeof(double), cudaMemcpyDeviceToHost);
-            /*for (int i = 0; i<N*N*N; i++){
-              printf("u_1d_gpu[%d] = %f\n",i,h_u_1d_gpu[i]);
-            }*/
 
             // device 0 mallocs
             double *u0_old_1d_gpu = NULL;
@@ -215,15 +207,6 @@ int main(int argc, char *argv[]) {
             cudaMemcpy(u0_old_1d_gpu, u_old_1d_gpu, N*N*N/2 * sizeof(double), cudaMemcpyDeviceToDevice);
             cudaMemcpy(u0_1d_gpu, u_1d_gpu, N*N*N/2 * sizeof(double), cudaMemcpyDeviceToDevice);
             cudaMemcpy(f0_1d_gpu, f_1d_gpu, N*N*N/2 * sizeof(double), cudaMemcpyDeviceToDevice);
-
-            // DEBUG
-            double *h_u0_1d_gpu = NULL;
-            cudaMallocHost((void**)&h_u0_1d_gpu, size/2);
-            cudaMemcpy(h_u0_1d_gpu, u0_1d_gpu, N*N*N/2 * sizeof(double), cudaMemcpyDeviceToHost);
-            /*printf("\n");
-            for (int i = 0; i<N*N*N/2; i++){
-              printf("u0_1d_gpu[%d] = %f\n",i,h_u0_1d_gpu[i]);
-            }*/
 
             cudaSetDevice(DEVICE_1);
             cudaDeviceEnablePeerAccess(0, 0);
@@ -241,15 +224,6 @@ int main(int argc, char *argv[]) {
             cudaMemcpy(u1_1d_gpu, u_1d_gpu + (N*N*N/2), N*N*N/2 * sizeof(double), cudaMemcpyDeviceToDevice);
             cudaMemcpy(f1_1d_gpu, f_1d_gpu + (N*N*N/2), N*N*N/2 * sizeof(double), cudaMemcpyDeviceToDevice);
 
-            // DEBUG
-            double *h_u1_1d_gpu = NULL;
-            cudaMallocHost((void**)&h_u1_1d_gpu, size/2);
-            cudaMemcpy(h_u1_1d_gpu, u1_1d_gpu, N*N*N/2 * sizeof(double), cudaMemcpyDeviceToHost);
-            /*printf("\n");
-            for (int i = 0; i<N*N*N/2; i++){
-              printf("u1_1d_gpu[%d] = %f\n",i,h_u1_1d_gpu[i]);
-            }*/
-
             cudaSetDevice(DEVICE_0);
             start_time = omp_get_wtime();
             run_gpu_jacobi_3(u0_1d_gpu, u0_old_1d_gpu, f0_1d_gpu, N, delta, iter_max, &iter, dim_grid, dim_block, u1_1d_gpu, u1_old_1d_gpu, f1_1d_gpu);
@@ -262,13 +236,15 @@ int main(int argc, char *argv[]) {
             cudaMemcpy(h_u00_1d_gpu, u0_1d_gpu, N*N*N/2 * sizeof(double), cudaMemcpyDeviceToHost);
             printf("\n");
             for (int i = 0; i<N*N*N/2; i++){
-              printf("u00_1d_gpu[%d] = %f\n",i,h_u00_1d_gpu[i]);
+              if (h_u00_1d_gpu[i] != 20 && h_u00_1d_gpu[i] != 0) {
+                printf("u0_1d_gpu[%d] = %f\n",i,h_u00_1d_gpu[i]);
+              }
             }
 
-            // device 0
-            cudaMemcpy(u_old_1d_gpu, u0_old_1d_gpu, N*N*N/2 * sizeof(double), cudaMemcpyDeviceToDevice);
-            cudaMemcpy(u_1d_gpu, u0_1d_gpu, N*N*N/2 * sizeof(double), cudaMemcpyDeviceToDevice);
-            cudaMemcpy(f_1d_gpu, f0_1d_gpu, N*N*N/2 * sizeof(double), cudaMemcpyDeviceToDevice);
+            // device 0 -> host
+            double *h_u_1d_gpu = NULL;
+            cudaMallocHost((void**)&h_u_1d_gpu, size);
+            cudaMemcpy(h_u_1d_gpu, u0_1d_gpu, N*N*N/2 * sizeof(double), cudaMemcpyDeviceToHost);
 
             cudaSetDevice(DEVICE_1);
             start_time = omp_get_wtime();
@@ -276,24 +252,28 @@ int main(int argc, char *argv[]) {
             end_time = omp_get_wtime();
             printf("GPU, DEVICE_1 (%d): iterations done: %d time: %f\n", gpu_run, iter, end_time - start_time);
 
-            // device 1
-            cudaMemcpy(u_old_1d_gpu, u1_old_1d_gpu + (N*N*N/2), N*N*N/2 * sizeof(double), cudaMemcpyDeviceToDevice);
-            cudaMemcpy(u_1d_gpu, u1_1d_gpu + (N*N*N/2), N*N*N/2 * sizeof(double), cudaMemcpyDeviceToDevice);
-            cudaMemcpy(f_1d_gpu, f1_1d_gpu + (N*N*N/2), N*N*N/2 * sizeof(double), cudaMemcpyDeviceToDevice);
-
-            // both devices
-            cudaSetDevice(DEVICE_0);
-            transfer_3d_from_1d(u_old_gpu, u_old_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
-            transfer_3d_from_1d(u_gpu, u_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
-            transfer_3d_from_1d(f_gpu, f_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
-
-            // debug
-            cudaMemcpy(h_u_1d_gpu, u_1d_gpu, N*N*N * sizeof(double), cudaMemcpyDeviceToHost);
-            for (int i = 0; i<N*N*N; i++){
-              printf("u_1d_gpu[%d] = %f\n",i,h_u_1d_gpu[i]);
+            // DEBUG
+            double *h_u11_1d_gpu = NULL;
+            cudaMallocHost((void**)&h_u11_1d_gpu, size/2);
+            cudaMemcpy(h_u11_1d_gpu, u1_1d_gpu, N*N*N/2 * sizeof(double), cudaMemcpyDeviceToHost);
+            printf("\n");
+            for (int i = 0; i<N*N*N/2; i++){
+              if (h_u11_1d_gpu[i] != 20 && h_u11_1d_gpu[i] != 0) {
+                printf("u1_1d_gpu[%d] = %f\n",i,h_u11_1d_gpu[i]);
+              }
             }
 
+            // device 1 -> host
+            cudaMemcpy(h_u_1d_gpu, u1_1d_gpu + (N*N*N/2), N*N*N/2 * sizeof(double), cudaMemcpyDeviceToHost);
+
             cudaSetDevice(DEVICE_0);
+            // debug
+            for (int i = 0; i<N*N*N; i++){
+              if (h_u_1d_gpu[i] != 20 && h_u_1d_gpu[i] != 0) {
+                printf("u_1d_gpu[%d] = %f\n",i,h_u_1d_gpu[i]);
+              }
+            }
+
             cudaFree(u_old_1d_gpu);
             cudaFree(u_1d_gpu);
             cudaFree(f_1d_gpu);
