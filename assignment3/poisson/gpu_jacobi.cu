@@ -40,7 +40,7 @@ void gpu_jacobi_2(double *u, double *u_old, double *f, int N, double *temp_point
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     int z = blockIdx.z * blockDim.z + threadIdx.z;
 
-    printf("x: %d, y: %d, z: %d\n", x,y,z);
+//    printf("x: %d, y: %d, z: %d\n", x,y,z);
     if (x > 1 && x < N - 1 && y > 1 && y < N - 1 && z > 1 && z < N - 1) {
             u[N * N * x + N * y + z] = (u_old[N * N * (x - 1) + N * y + z] + u_old[N * N * (x + 1) + N * y + z]
                                       + u_old[N * N * x + N * (y - 1) + z] + u_old[N * N * x + N * (y + 1) + z]

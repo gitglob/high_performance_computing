@@ -4,11 +4,11 @@
 #include "transfer3d_gpu.h"
 #include "alloc3d_gpu.h"
 #include "alloc3d.h"
+#include "print.h"
 
 #include <cuda_runtime.h>
 
 extern "C" {
-    #include "print.h"
     #include <stdio.h>
     #include <stdlib.h>
     #ifdef _OPENMP
