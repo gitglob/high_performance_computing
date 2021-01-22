@@ -101,7 +101,7 @@ void gpu_jacobi_31(double *u, double *u_old, double *f, int N,int delta_2, doubl
     int z = blockIdx.z * blockDim.z + threadIdx.z;
 
     if (x>0 && y>0 && z>0 && x<(N/2-1) && y<N-1 && z<N-1){ // inside the half cube
-        u[N * N * x + N * y + z] = (u_old[N/2 * N * (x - 1) + N * y + z] + u_old_[N/2 * N * (x + 1) + N * y + z]
+        u[N * N * x + N * y + z] = (u_old[N/2 * N * (x - 1) + N * y + z] + u_old[N/2 * N * (x + 1) + N * y + z]
                                   + u_old[N/2 * N * x + N * (y - 1) + z] + u_old[N/2 * N * x + N * (y + 1) + z]
                                   + u_old[N/2 * N * x + N * y + (z - 1)] + u_old[N/2 * N * x + N * y + (z + 1)]
                                   + delta_2 * f[N/2 * N * x + N * y + z]) * div_val;
