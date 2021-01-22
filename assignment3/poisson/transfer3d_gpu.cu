@@ -2,10 +2,10 @@
 #include <helper_cuda.h>
 
 void
-transfer_3d(double ***dst, double ***src, int nx, int ny, int nz, int flag)
+transfer_3d(double ***dst, double ***src, int m, int n, int k, int flag)
 {
-    long nPtr = nz + nz * ny;
-    long nBlk = nx * ny * nz;
+    long nPtr = m + m * n;
+    long nBlk = k * n * m;
 
     // we only transfer the value block
     checkCudaErrors( cudaMemcpy((double *) dst + nPtr,
@@ -15,10 +15,10 @@ transfer_3d(double ***dst, double ***src, int nx, int ny, int nz, int flag)
 }
 
 void
-transfer_3d_to_1d(double *dst, double ***src, int nx, int ny, int nz, int flag)
+transfer_3d_to_1d(double *dst, double ***src, int m, int n, int k, int flag)
 {
-    long nPtr = nz + nz * ny;
-    long nBlk = nx * ny * nz;
+    long nPtr = m + m * n;
+    long nBlk = k * n * m;
 
     // we only transfer the value block
     checkCudaErrors( cudaMemcpy((double *) dst,
@@ -28,10 +28,10 @@ transfer_3d_to_1d(double *dst, double ***src, int nx, int ny, int nz, int flag)
 }
 
 void
-transfer_3d_from_1d(double ***dst, double *src, int nx, int ny, int nz, int flag)
+transfer_3d_from_1d(double ***dst, double *src, int m, int n, int k, int flag)
 {
-    long nPtr = nz + nz * ny;
-    long nBlk = nx * ny * nz;
+    long nPtr = m + m * n;
+    long nBlk = k * n * m;
 
     // we only transfer the value block
     checkCudaErrors( cudaMemcpy((double *) dst + nPtr,
