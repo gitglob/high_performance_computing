@@ -163,13 +163,13 @@ int main(int argc, char *argv[]) {
 //                }
 //            }
 //
-//            transfer_3d_from_1d(u_old_gpu, u_old_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
-//            transfer_3d_from_1d(u_gpu, u_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
-//            transfer_3d_from_1d(f_gpu, f_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
-//
-//            cudaFree(u_old_1d_gpu);
-//            cudaFree(u_1d_gpu);
-//            cudaFree(f_1d_gpu);
+            transfer_3d_from_1d(u_old_gpu, u_old_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
+            transfer_3d_from_1d(u_gpu, u_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
+            transfer_3d_from_1d(f_gpu, f_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
+
+            cudaFree(u_old_1d_gpu);
+            cudaFree(u_1d_gpu);
+            cudaFree(f_1d_gpu);
             };
             break;
 
