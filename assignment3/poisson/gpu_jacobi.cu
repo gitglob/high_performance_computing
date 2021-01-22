@@ -34,23 +34,21 @@ void run_gpu_jacobi_1(double ***u, double ***u_old, double ***f, int N, int delt
 }
 
 __global__
-void gpu_jacobi_2(double *u, double *u_old, double *f, int N, double *temp_pointer, int delta_2, double div_val) {
+void gpu_jacobi_2(double *u, double *u_old, double *f, int N, int delta_2, double div_val) {
 
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     int z = blockIdx.z * blockDim.z + threadIdx.z;
 
 //    printf("x: %d, y: %d, z: %d\n", x,y,z);
-    if (x > 1 && x < N - 1 && y > 1 && y < N - 1 && z > 1 && z < N - 1) {
+    if (x > 0 && x < N - 1 && y > 0 && y < N - 1 && z > 0 && z < N - 1) {
             u[N * N * x + N * y + z] = (u_old[N * N * (x - 1) + N * y + z] + u_old[N * N * (x + 1) + N * y + z]
                                       + u_old[N * N * x + N * (y - 1) + z] + u_old[N * N * x + N * (y + 1) + z]
                                       + u_old[N * N * x + N * y + (z - 1)] + u_old[N * N * x + N * y + (z + 1)]
                                       + delta_2 * f[N * N * x + N * y + z]) * div_val;
     }
 
-    temp_pointer = u;
-    u = u_old;
-    u_old = temp_pointer;
+
 }
 
 void run_gpu_jacobi_2(double *u, double *u_old, double *f, int N, int delta, int iter_max, int *iter, dim3 dim_grid, dim3 dim_block) {
@@ -62,9 +60,12 @@ void run_gpu_jacobi_2(double *u, double *u_old, double *f, int N, int delta, int
     //cudaMalloc((void**)&temp_pointer, N*N*N);
 
     while (*iter < iter_max) {
-        gpu_jacobi_2<<<dim_grid, dim_block>>>(u, u_old, f, N, temp_pointer, delta_2, div_val);
+        gpu_jacobi_2<<<dim_grid, dim_block>>>(u, u_old, f, N, delta_2, div_val);
         checkCudaErrors(cudaDeviceSynchronize());
         (*iter)++;
+        temp_pointer = u;
+        u = u_old;
+        u_old = temp_pointer;
     }
 }
 
@@ -119,7 +120,7 @@ void run_gpu_jacobi_3(double *u, double *u_old, double *f, int N, int delta, int
 
 
 __global__
-void gpu_jacobi_4(double *u, double *u_old, double *f, int N, double *temp_pointer, int delta_2, double div_val, double *d) {
+void gpu_jacobi_4(double *u, double *u_old, double *f, int N, int delta_2, double div_val, double *d) {
 
     double value = 0;
     double norm_diff, norm;
@@ -128,7 +129,7 @@ void gpu_jacobi_4(double *u, double *u_old, double *f, int N, double *temp_point
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     int z = blockIdx.z * blockDim.z + threadIdx.z;
 
-    if (x > 1 && x < N - 1 && y > 1 && y < N - 1 && z > 1 && z < N - 1) {
+    if (x > 0 && x < N - 1 && y > 0 && y < N - 1 && z > 0 && z < N - 1) {
             u[N * N * x + N * y + z] = (u_old[N * N * (x - 1) + N * y + z] + u_old[N * N * (x + 1) + N * y + z]
                                       + u_old[N * N * x + N * (y - 1) + z] + u_old[N * N * x + N * (y + 1) + z]
                                       + u_old[N * N * x + N * y + (z - 1)] + u_old[N * N * x + N * y + (z + 1)]
@@ -156,7 +157,7 @@ void run_gpu_jacobi_4(double *u, double *u_old, double *f, int N, int delta, int
     while (d > *tolerance && *iter < iter_max) {
         d = 0;
         cudaMemcpy(d_gpu, &d, sizeof(double), cudaMemcpyHostToDevice);
-        gpu_jacobi_4<<<dim_grid, dim_block>>>(u, u_old, f, N, temp_pointer, delta_2, div_val, d_gpu);
+        gpu_jacobi_4<<<dim_grid, dim_block>>>(u, u_old, f, N, delta_2, div_val, d_gpu);
         cudaMemcpy(&d, d_gpu, sizeof(double), cudaMemcpyDeviceToHost);
         checkCudaErrors(cudaDeviceSynchronize());
         d = sqrt(d);
