@@ -120,13 +120,13 @@ int main(int argc, char *argv[]) {
     transfer_3d_to_1d(u_1d_gpu, u_gpu, N, N, N, cudaMemcpyDeviceToDevice);
     transfer_3d_to_1d(f_1d_gpu, f_gpu, N, N, N, cudaMemcpyDeviceToDevice);
 
+    dim3 dim_grid = dim3(grid_size, grid_size, grid_size);
+    dim3 dim_block = dim3(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+
     start_time = omp_get_wtime();
     run_gpu_jacobi_4(u_1d_gpu, u_old_1d_gpu, f_1d_gpu, N, delta, iter_max, &iter, dim_grid, dim_block, &tolerance);
     end_time = omp_get_wtime();
     printf("GPU %d: iterations done: %d time: %f, tolerance: %f\n", gpu_run, iter, end_time - start_time, tolerance);
-
-    // debug
-    double *hu = NULL, *ho = NULL, *hf = NULL;
 
     transfer_3d_from_1d(u_old_gpu, u_old_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
     transfer_3d_from_1d(u_gpu, u_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
