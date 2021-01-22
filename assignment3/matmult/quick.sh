@@ -20,15 +20,15 @@ EXECUTABLE=matmult_f.nvcc
 # define the mkn values in the MKN variable
 #
 # SIZES="5000"
-SIZES="64 128 256 512 1024"
+SIZES="5000"
 
 # define the permutation type in PERM
 #
 # PERMS="gpu2 gpu3 gpu4"
-PERMS="gpu2 gpu3 gpu4 gpu5 gpulib"
+PERMS="gpu5 gpulib"
 
 #This defines amount of iterations of matrix calculation 
-# export MFLOPS_MAX_IT=1
+export MFLOPS_MAX_IT=1
 
 # export MKL_NUM_THREADS=1
 
@@ -40,20 +40,6 @@ export MATMULT_COMPARE=0
 
 # start the collect command with the above settings
 # for S in $SIZES
-for PERM in $PERMS
-do
-    for S in $SIZES
-    do
-        ./$EXECUTABLE $PERM $S $S $S 
-        # numactl --cpunodebind=0 ./$EXECUTABLE $PERM $S $S $S
-        # MKL_NUM_THREADS=1 ./$EXECUTABLE $PERM $S $S $S
-    done
-done
-
-PERMS="gpu2 gpu3 gpu4 gpu5 gpulib"
-SIZES="2048 4096 8192"
-export MFLOPS_MAX_IT=1
-
 for PERM in $PERMS
 do
     for S in $SIZES

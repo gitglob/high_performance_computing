@@ -9,9 +9,37 @@ extern "C" {
     #include <omp.h>
 
     #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
-    #define BLOCK_SIZE 32
+    #define BLOCK_SIZE 16
 
     
+    // Matrix multiplication via CUBLAS DGEMM
+    void matmult_gpulib(int m, int n, int k, double *h_A, double *h_B, double *h_C) {
+        double *d_A, *d_B, *d_C;
+        cublasHandle_t handle;
+        cublasStatus_t stat;
+        double alpha = 1, beta = 0;
+
+        stat = cublasCreate(&handle);
+        
+        if (stat != CUBLAS_STATUS_SUCCESS) {
+            printf ("CUBLAS initialization failed\n");
+        }
+        
+        cudaMalloc((void **)&d_A, m * k * sizeof(double));
+        cudaMalloc((void **)&d_B, k * n * sizeof(double));
+        cudaMalloc((void **)&d_C, m * n * sizeof(double));
+
+        cudaMemcpy(d_A, h_A, m * k * sizeof(double), cudaMemcpyHostToDevice);
+        cudaMemcpy(d_B, h_B, k * n * sizeof(double), cudaMemcpyHostToDevice);
+
+        cublasDgemm(handle,   CUBLAS_OP_N, CUBLAS_OP_N, n, m, k, &alpha, d_B, n, d_A, k, &beta, d_C, n);
+
+        cudaMemcpy(h_C, d_C, m * n * sizeof(double), cudaMemcpyDeviceToHost);
+
+        cublasDestroy(handle);
+
+    }
+
      // Matrix multiplication for gpu version 5
     void matmult_gpu5(int m, int n, int k, double *h_A, double *h_B, double *h_C) {
         double *d_A, *d_B, *d_C;
@@ -91,16 +119,15 @@ extern "C" {
     void matmult_gpu4(int m, int n, int k, double *h_A, double *h_B, double *h_C) {
         double *d_A, *d_B, *d_C;
         int grid_size_m, grid_size_n;
-        double time;
 
-        // assume block size = 32x32
-        grid_size_m = (int)(m/5)/32;
-        grid_size_n = (int)n/32;
-        if (m % 32 > 0) grid_size_m++;
-        if (n % 32 > 0) grid_size_n++;
+        // assume block size = 16x16
+        grid_size_m = (int)(m/5)/16;
+        grid_size_n = (int)n/16;
+        if (m % 16 > 0) grid_size_m++;
+        if (n % 16 > 0) grid_size_n++;
         //First is the number of elements in row, second in columns
         dim3 dimGrid(grid_size_n,grid_size_m,1); 
-        dim3 dimBlock(32,32,1); //maximizng the amount of threads in a block
+        dim3 dimBlock(16,16,1); //maximizng the amount of threads in a block
 
         cudaMalloc((void **)&d_A, m * k * sizeof(double)); 
         cudaMalloc((void **)&d_B, k * n * sizeof(double)); 
@@ -108,28 +135,22 @@ extern "C" {
 
         cudaMemcpy(d_A, h_A, m * k * sizeof(double), cudaMemcpyHostToDevice);
         cudaMemcpy(d_B, h_B, k * n * sizeof(double), cudaMemcpyHostToDevice);
-
-        // time = omp_get_wtime();  
+ 
         kernel_gpu4<<<dimGrid,dimBlock>>>(m, n, k, d_A, d_B, d_C);
         cudaDeviceSynchronize();
-        // printf("Calculation time = %3.2f seconds\n", omp_get_wtime() - time); 
-    
 
         cudaMemcpy(h_C, d_C, m * n * sizeof(double), cudaMemcpyDeviceToHost);
         cudaFree(d_A);
         cudaFree(d_B);
         cudaFree(d_C);   
     }
-    // Neighbour to the bottom version
+    
     // Kernel for matrix multiplication for gpu version 4
     __global__ void kernel_gpu4(int m, int n, int k, double *A, double *B, double *C) {
         int kk;
-        // int col = blockIdx.x * blockDim.x + threadIdx.x;
-        // int row = blockIdx.y * blockDim.y + threadIdx.y;
         int nn = blockIdx.x * blockDim.x + threadIdx.x;
         int mm = blockIdx.y * blockDim.y + threadIdx.y;
-        // We want the method to run for every size and 
-        // there might be too much threads initialized because of that
+
         if (mm*5<m && nn<n) { 
             for (kk = 0; kk < k; kk++){
                 if (kk == 0) C[mm*5*n + nn] = 0;
@@ -147,7 +168,6 @@ extern "C" {
     void matmult_blk(int m, int n, int k, double *h_A, double *h_B, double *h_C, int elems) {
         double *d_A, *d_B, *d_C;
         int grid_size_m, grid_size_n;
-        double time;
 
         // assume block size = 32x32
         grid_size_m = (int)(m/elems)/32;
@@ -164,13 +184,10 @@ extern "C" {
 
         cudaMemcpy(d_A, h_A, m * k * sizeof(double), cudaMemcpyHostToDevice);
         cudaMemcpy(d_B, h_B, k * n * sizeof(double), cudaMemcpyHostToDevice);
-
-        // time = omp_get_wtime();  
+ 
         kernel_gpu4_test<<<dimGrid,dimBlock>>>(m, n, k, d_A, d_B, d_C, elems);
         cudaDeviceSynchronize();
-        // printf("Calculation time = %3.2f seconds\n", omp_get_wtime() - time); 
     
-
         cudaMemcpy(h_C, d_C, m * n * sizeof(double), cudaMemcpyDeviceToHost);
         cudaFree(d_A);
         cudaFree(d_B);
@@ -180,12 +197,9 @@ extern "C" {
     // Kernel for matrix multiplication for gpu version 4
     __global__ void kernel_gpu4_test(int m, int n, int k, double *A, double *B, double *C, int elems) {
         int kk, elemCounter;
-        // int col = blockIdx.x * blockDim.x + threadIdx.x;
-        // int row = blockIdx.y * blockDim.y + threadIdx.y;
         int nn = blockIdx.x * blockDim.x + threadIdx.x;
         int mm = blockIdx.y * blockDim.y + threadIdx.y;
-        // We want the method to run for every size and 
-        // there might be too much threads initialized because of that
+
         if (mm*elems<m && nn<n) { 
             for (kk = 0; kk < k; kk++){
                 if (kk == 0) C[mm*elems*n + nn] = 0;
@@ -193,8 +207,6 @@ extern "C" {
                 for (elemCounter = 1; elemCounter<elems; elemCounter++){
                     if((mm*elems)+elemCounter<m) C[(mm*elems + elemCounter)*n + nn] += A[(mm*elems + elemCounter)*k +kk]*B[kk*n + nn];
                 }
-                // if((mm*2)+1<m) C[(mm*2 + 1)*n + nn] += A[(mm*2 + 1)*k +kk]*B[kk*n + nn];
-                
             } 
         }
     }
@@ -203,7 +215,6 @@ extern "C" {
     void matmult_gpu3(int m, int n, int k, double *h_A, double *h_B, double *h_C) {
         double *d_A, *d_B, *d_C;
         int grid_size_m, grid_size_n;
-        double time;
 
         // assume block size = 32x32
         grid_size_m = (int)(m/2)/32;
@@ -221,11 +232,8 @@ extern "C" {
         cudaMemcpy(d_A, h_A, m * k * sizeof(double), cudaMemcpyHostToDevice);
         cudaMemcpy(d_B, h_B, k * n * sizeof(double), cudaMemcpyHostToDevice);
 
-        // time = omp_get_wtime();  
         kernel_gpu3<<<dimGrid,dimBlock>>>(m, n, k, d_A, d_B, d_C);
         cudaDeviceSynchronize();
-        // printf("Calculation time = %3.2f seconds\n", omp_get_wtime() - time); 
-    
 
         cudaMemcpy(h_C, d_C, m * n * sizeof(double), cudaMemcpyDeviceToHost);
         cudaFree(d_A);
@@ -236,12 +244,9 @@ extern "C" {
     // Kernel for matrix multiplication for gpu version 3
     __global__ void kernel_gpu3(int m, int n, int k, double *A, double *B, double *C) {
         int kk;
-        // int col = blockIdx.x * blockDim.x + threadIdx.x;
-        // int row = blockIdx.y * blockDim.y + threadIdx.y;
         int nn = blockIdx.x * blockDim.x + threadIdx.x;
         int mm = blockIdx.y * blockDim.y + threadIdx.y;
-        // We want the method to run for every size and 
-        // there might be too much threads initialized because of that
+
         if (mm*2<m && nn<n) { 
             for (kk = 0; kk < k; kk++){
                 if (kk == 0) C[mm*2*n + nn] = 0;
@@ -257,8 +262,6 @@ extern "C" {
     void matmult_gpu2(int m, int n, int k, double *h_A, double *h_B, double *h_C) {
         double *d_A, *d_B, *d_C;
         int grid_size_m, grid_size_n;
-        double time;
-
         // assume block size = 32x32
         grid_size_m = (int)m/32;
         grid_size_n = (int)n/32;
@@ -271,17 +274,15 @@ extern "C" {
         cudaMalloc((void **)&d_A, m * k * sizeof(double)); 
         cudaMalloc((void **)&d_B, k * n * sizeof(double)); 
         cudaMalloc((void **)&d_C, m * n * sizeof(double));
-
+        
         cudaMemcpy(d_A, h_A, m * k * sizeof(double), cudaMemcpyHostToDevice);
         cudaMemcpy(d_B, h_B, k * n * sizeof(double), cudaMemcpyHostToDevice);
-
-        // time = omp_get_wtime();  
+          
         kernel_gpu2<<<dimGrid,dimBlock>>>(m, n, k, d_A, d_B, d_C);
         cudaDeviceSynchronize();
-        // printf("Calculation time = %3.2f seconds\n", omp_get_wtime() - time); 
-    
-
+        
         cudaMemcpy(h_C, d_C, m * n * sizeof(double), cudaMemcpyDeviceToHost);
+        
         cudaFree(d_A);
         cudaFree(d_B);
         cudaFree(d_C);   
@@ -290,8 +291,6 @@ extern "C" {
     // Kernel for matrix multiplication for gpu version 2
     __global__ void kernel_gpu2(int m, int n, int k, double *A, double *B, double *C) {
         int kk;
-        // int col = blockIdx.x * blockDim.x + threadIdx.x;
-        // int row = blockIdx.y * blockDim.y + threadIdx.y;
         int nn = blockIdx.x * blockDim.x + threadIdx.x;
         int mm = blockIdx.y * blockDim.y + threadIdx.y;
         // We want the method to run for every size and 
@@ -309,18 +308,20 @@ extern "C" {
     // Matrix multiplication for gpu version 1
     void matmult_gpu1(int m, int n, int k, double *h_A, double *h_B, double *h_C) {
         double *d_A, *d_B, *d_C;
+        double time;
 
         cudaMalloc((void **)&d_A, m * k * sizeof(double)); 
         cudaMalloc((void **)&d_B, k * n * sizeof(double)); 
         cudaMalloc((void **)&d_C, m * n * sizeof(double));
-
+        
         cudaMemcpy(d_A, h_A, m * k * sizeof(double), cudaMemcpyHostToDevice);
         cudaMemcpy(d_B, h_B, k * n * sizeof(double), cudaMemcpyHostToDevice);
-
+        
         kernel_gpu1<<<1,1>>>(m, n, k, d_A, d_B, d_C);
         cudaDeviceSynchronize();
-
-        cudaMemcpy(h_C, d_C, m * n * sizeof(double), cudaMemcpyDeviceToHost); 
+        
+        cudaMemcpy(h_C, d_C, m * n * sizeof(double), cudaMemcpyDeviceToHost);
+        
         cudaFree(d_A);
         cudaFree(d_B);
         cudaFree(d_C); 
@@ -361,8 +362,6 @@ extern "C" {
     void matmult_nat(int m, int n, int k, double *A, double *B, double *C) {
         matmult_mnk(m, n, k, A, B, C);
     }
-
-
 
 
     // NOT USED

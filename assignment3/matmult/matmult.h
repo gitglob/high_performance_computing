@@ -1,6 +1,7 @@
 #ifndef __MATMULT_H
 #define __MATMULT_H
 
+void matmult_gpulib(int m, int n, int k, double *h_A, double *h_B, double *h_C) ;
 
 void matmult_gpu5(int m, int n, int k, double *h_A, double *h_B, double *h_C);
 __global__ void kernel_gpu5(int m, int n, int k, double *a, double *b, double *c, double *Asub, double *Bsub, double *Csub);
