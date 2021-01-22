@@ -8,6 +8,7 @@
 #include <cuda_runtime.h>
 
 extern "C" {
+    #include "print.h"
     #include <stdio.h>
     #include <stdlib.h>
     #ifdef _OPENMP
