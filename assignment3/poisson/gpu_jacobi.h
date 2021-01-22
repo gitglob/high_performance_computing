@@ -3,21 +3,21 @@
 
 __global__ void gpu_jacobi_1(double ***u, double ***u_old, double ***f, int N, double ***temp_pointer, int delta_2, double div_val);
 
-void gpu_jacobi_2(double *u, double *u_old, double *f, int N, int delta_2, double div_val);
+__global__ void gpu_jacobi_2(double *u, double *u_old, double *f, int N, int delta_2, double div_val);
 void run_gpu_jacobi_2(double *u, double *u_old, double *f, int N, int delta, int iter_max, int *iter, dim3 dim_grid, dim3 dim_block);
 
 void gpu_jacobi_31(double *u, double *u_old, double *f, int N, int delta_2, double div_val, double *u_old_);
 void gpu_jacobi_32(double *u, double *u_old, double *f, int N, int delta_2, double div_val, double *u_old_);
 void run_gpu_jacobi_3(double *u, double *u_old, double *f, int N, int delta, int iter_max, int *iter, dim3 dim_grid, dim3 dim_block, double *u_, double *u_old_, double *f_);
 
-void gpu_jacobi_4(double *u, double *u_old, double *f, int N, int delta_2, double div_val, double d);
+__global__ void gpu_jacobi_4(double *u, double *u_old, double *f, int N, int delta_2, double div_val, double d);
 void run_gpu_jacobi_4(double *u, double *u_old, double *f, int N, int delta, int iter_max, int *iter, dim3 dim_grid, dim3 dim_block, double *tolerance);
 
 double warpReduceSum(double value);
 void reduction_presum(double *a, int n, double *res);
-void gpu_jacobi_5(double *u, double *u_old, double *f, int N, int delta_2, double div_val, double *d);
+__global__ void gpu_jacobi_5(double *u, double *u_old, double *f, int N, int delta_2, double div_val, double *d);
 
-void gpu_jacobi_5(double *u, double *u_old, double *f, int N, int delta_2, double div_val, double d);
+__global__ void gpu_jacobi_5(double *u, double *u_old, double *f, int N, int delta_2, double div_val, double d);
 void run_gpu_jacobi_5(double *u, double *u_old, double *f, int N, int delta, int iter_max, int *iter, dim3 dim_grid, dim3 dim_block, double *tolerance);
 
 #endif /* __GPU_JACOBI */
