@@ -7,6 +7,7 @@
 #include "print.h"
 
 #include <cuda_runtime.h>
+#include <helper_cuda.h>
 
 extern "C" {
 #include <stdio.h>
@@ -135,55 +136,8 @@ int main(int argc, char *argv[]) {
             break;
 
         case 3: {
-            cudaSetDevice(DEVICE_0);
-
-            size = N * N * N * sizeof(double);
-
-            cudaMalloc((void **) &u_old_1d_gpu, size);
-            cudaMalloc((void **) &u_1d_gpu, size);
-            cudaMalloc((void **) &f_1d_gpu, size);
-
-            transfer_3d_to_1d(u_old_1d_gpu, u_old_gpu, N, N, N, cudaMemcpyDeviceToDevice);
-            transfer_3d_to_1d(u_1d_gpu, u_gpu, N, N, N, cudaMemcpyDeviceToDevice);
-            transfer_3d_to_1d(f_1d_gpu, f_gpu, N, N, N, cudaMemcpyDeviceToDevice);
-
-            dim_grid = dim3(N / BLOCK_SIZE, N / BLOCK_SIZE, N / BLOCK_SIZE);
-            dim_block = dim3(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-
-            start_time = omp_get_wtime();
-            run_gpu_jacobi_2(u_1d_gpu, u_old_1d_gpu, f_1d_gpu, N, delta, iter_max, &iter, dim_grid, dim_block);
-            end_time = omp_get_wtime();
-            printf("GPU %d: iterations done: %d time: %f\n", gpu_run, iter, end_time - start_time);
-
-            // debug
-            double *hu = NULL, *ho = NULL, *hf = NULL;
-            cudaMallocHost((void **) &hu, size);
-            cudaMallocHost((void **) &ho, size);
-            cudaMallocHost((void **) &hf, size);
-            cudaMemcpy(hu, u_1d_gpu, size, cudaMemcpyDeviceToHost);
-            cudaMemcpy(ho, u_old_1d_gpu, size, cudaMemcpyDeviceToHost);
-            cudaMemcpy(hf, f_1d_gpu, size, cudaMemcpyDeviceToHost);
-            for (int i = 0; i < N * N * N; i++) {
-                if (hu[i] != 20 && hu[i] != 0) {
-                    printf("u_1d_gpu[%d] = %f\n", i, hu[i]);
-                    //printf("u_old_1d_gpu[%d] = %f\n",i,ho[i]);
-                    //printf("f_1d_gpu[%d] = %f\n",i,hf[i]);
-                }
-            }
-
-            transfer_3d_from_1d(u_old_gpu, u_old_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
-            transfer_3d_from_1d(u_gpu, u_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
-            transfer_3d_from_1d(f_gpu, f_1d_gpu, N, N, N, cudaMemcpyDeviceToDevice);
-
-            cudaFree(u_old_1d_gpu);
-            cudaFree(u_1d_gpu);
-            cudaFree(f_1d_gpu);
-        };
-            break;
-
-        case 3: {
             // define size
-            size = N * N * N * sizeof(double);
+            int size = N * N * N * sizeof(double);
 
             // create 2 sub-matrices in host
             double ***u0_old = NULL;
@@ -406,7 +360,7 @@ int main(int argc, char *argv[]) {
     char *output_ext = "";
     char output_filename[FILENAME_MAX];
 
-    switch(output_type) {
+    switch (output_type) {
         case 0:
             // no output at all
             break;
