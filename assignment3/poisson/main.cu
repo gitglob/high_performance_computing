@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
     dim3 dim_block = dim3(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
 
     start_time = omp_get_wtime();
-    run_gpu_jacobi_4(u_1d_gpu, u_old_1d_gpu, f_1d_gpu, N, delta, iter_max, &iter, dim_grid, dim_block, &tolerance);
+    run_gpu_jacobi_5(u_1d_gpu, u_old_1d_gpu, f_1d_gpu, N, delta, iter_max, &iter, dim_grid, dim_block, &tolerance);
     end_time = omp_get_wtime();
     printf("GPU %d: iterations done: %d time: %f, tolerance: %f\n", gpu_run, iter, end_time - start_time, tolerance);
 
