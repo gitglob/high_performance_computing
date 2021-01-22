@@ -28,12 +28,14 @@ int main(int argc, char *argv[]) {
     double start_T = 0;
     int gpu_run = 0;
     int output_type = 0;
+    double tolerance;
 
     N = atoi(argv[1]);    // grid size
     iter_max = atoi(argv[2]);  // max. no. of iterations
     start_T = atof(argv[3]);  // start T for all inner grid points
     gpu_run = atof(argv[4]); // 0 -> run CPU, 1/2/3-> run on GPU
     output_type = atof(argv[5]); // 0 -> run CPU, 1/2/3-> run on GPU
+    tolerance = atof(argv[6]); 
 
     double ***u_old = NULL;
     double ***u = NULL;
@@ -285,6 +287,34 @@ int main(int argc, char *argv[]) {
 //            cudaDeviceDisablePeerAccess(DEVICE_1);
 //            };
 //            break;
+        case 4:{
+            cudaSetDevice(DEVICE_0);
+
+            int size = N * N * N  * sizeof(double);
+
+
+            cudaMalloc((void**)&u_old_1d_gpu, size);
+            cudaMalloc((void**)&u_1d_gpu, size);
+            cudaMalloc((void**)&f_1d_gpu, size);
+
+
+            transfer_3d_to_1d(u_old_1d_gpu, u_old_gpu, N, N, N, cudaMemcpyDeviceToDevice);
+            transfer_3d_to_1d(u_1d_gpu, u_gpu, N, N, N, cudaMemcpyDeviceToDevice);
+            transfer_3d_to_1d(f_1d_gpu, f_gpu, N, N, N, cudaMemcpyDeviceToDevice);
+
+            start_time = omp_get_wtime();
+            run_gpu_jacobi_4(u_1d_gpu, u_old_1d_gpu, f_1d_gpu, N, delta, iter_max, &iter, dim_grid, dim_block, &tolerance);
+            end_time = omp_get_wtime();
+            printf("GPU %d: iterations done: %d time: %f, tolerance: %f\n", gpu_run, iter, end_time - start_time, tolerance);
+
+            // debug
+            double *hu=NULL,*ho=NULL,*hf=NULL;
+
+            cudaFree(u_old_1d_gpu);
+            cudaFree(u_1d_gpu);
+            cudaFree(f_1d_gpu);
+            };
+            break;
     }
 
     transfer_3d(u, u_gpu, N, N, N, cudaMemcpyDeviceToHost);

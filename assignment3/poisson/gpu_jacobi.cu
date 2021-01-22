@@ -116,3 +116,57 @@ void run_gpu_jacobi_3(double *u, double *u_old, double *f, int N, int delta, int
         (*iter)++;
     }
 }
+
+
+__global__
+void gpu_jacobi_4(double *u, double *u_old, double *f, int N, double *temp_pointer, int delta_2, double div_val, double *d) {
+
+    double value = 0;
+    double norm_diff, norm;
+
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
+    int y = blockIdx.y * blockDim.y + threadIdx.y;
+    int z = blockIdx.z * blockDim.z + threadIdx.z;
+
+    if (x > 1 && x < N - 1 && y > 1 && y < N - 1 && z > 1 && z < N - 1) {
+            u[N * N * x + N * y + z] = (u_old[N * N * (x - 1) + N * y + z] + u_old[N * N * (x + 1) + N * y + z]
+                                      + u_old[N * N * x + N * (y - 1) + z] + u_old[N * N * x + N * (y + 1) + z]
+                                      + u_old[N * N * x + N * y + (z - 1)] + u_old[N * N * x + N * y + (z + 1)]
+                                      + delta_2 * f[N * N * x + N * y + z]) * div_val;
+
+            norm_diff = u[N * N * x + N * y + z] - u_old[N * N * x + N * y + z];
+            norm = norm_diff * norm_diff;
+
+            atomicAdd(d, norm);
+    }
+
+}
+
+void run_gpu_jacobi_4(double *u, double *u_old, double *f, int N, int delta, int iter_max, int *iter, dim3 dim_grid, dim3 dim_block, double *tolerance) {
+    double d = 100000;
+    double delta_2 = delta * delta;
+    double div_val = 1.0 / 6.0;
+    double *temp_pointer = NULL;
+
+    double *d_gpu;
+    cudaMalloc((void**)&d_gpu, sizeof(double));
+
+    printf("Iter: %i\n", *iter);
+    printf("Tolerance: %f\n", *tolerance);
+    while (d > *tolerance && *iter < iter_max) {
+        d = 0;
+        cudaMemcpy(d_gpu, &d, sizeof(double), cudaMemcpyHostToDevice);
+        gpu_jacobi_4<<<dim_grid, dim_block>>>(u, u_old, f, N, temp_pointer, delta_2, div_val, d_gpu);
+        cudaMemcpy(&d, d_gpu, sizeof(double), cudaMemcpyDeviceToHost);
+        checkCudaErrors(cudaDeviceSynchronize());
+        d = sqrt(d);
+        // printf("d: %f\n", d);
+        temp_pointer = u;
+        u = u_old;
+        u_old = temp_pointer;
+        (*iter)++;
+    }
+
+    *tolerance = d;
+    cudaFree(d_gpu);
+}
