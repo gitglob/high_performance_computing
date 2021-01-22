@@ -3,10 +3,10 @@ TARGET	= jacobi.nvcc
 LIBSRCS	= main.cu alloc3d.cu alloc3d_gpu.cu transfer3d_gpu.cu gpu_jacobi.cu init.cu
 LIBOBJS	= main.o alloc3d.o alloc3d_gpu.o transfer3d_gpu.o gpu_jacobi.o init.o
 
-OPT	= -O3
+OPT	= -O3 -g
 PIC =
 OMP   = -fopenmp
-XOPT  = -Xptxas=-v -lineinfo #-G # only use -G for debugging / profiler
+XOPT  = -Xptxas=-v -lineinfo
 XARCH = -arch=sm_80
 
 CXX	= nvcc
