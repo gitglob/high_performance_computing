@@ -22,19 +22,6 @@ void gpu_jacobi_1(double ***u, double ***u_old, double ***f, int N, double ***te
     u_old = temp_pointer;
 }
 
-void run_gpu_jacobi_1(double ***u, double ***u_old, double ***f, int N, int delta, int iter_max, int *iter) {
-
-    double delta_2 = delta * delta;
-    double div_val = 1.0 / 6.0;
-    double ***temp_pointer;
-
-    while (*iter < iter_max) {
-        gpu_jacobi_1<<<1, 1>>>(u, u_old, f, N, temp_pointer, delta_2, div_val);
-        checkCudaErrors(cudaDeviceSynchronize());
-        (*iter)++;
-    }
-}
-
 __global__
 void gpu_jacobi_2(double *u, double *u_old, double *f, int N, int delta_2, double div_val) {
 
