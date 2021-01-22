@@ -78,16 +78,16 @@ void gpu_jacobi_32(double *u, double *u_old, double *f, int N, int delta_2, doub
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     int z = blockIdx.z * blockDim.z + threadIdx.z;
 
-    if (x>0 && y>0 && z>0 && x<(N/2-1) && y<N-1 && z<N-1){ // inside the half cube
-        u[N * N * x + N * y + z] = (u_old[N/2 * N * (x-1) + N * y + z] + u_old[N/2 * N * (x + 1) + N * y + z]
-                                  + u_old[N/2 * N * x + N * (y - 1) + z] + u_old[N/2 * N * x + N * (y + 1) + z]
-                                  + u_old[N/2 * N * x + N * y + (z - 1)] + u_old[N/2 * N * x + N * y + (z + 1)]
+    if ((x>0) && (y>0) && (z>0) && (x<((N/2)-1)) && (y<N-1) && (z<N-1)){ // inside the lower half cube
+        u[N * N * x + N * y + z] = (u_old[(N/2) * N * (x-1) + N * y + z] + u_old[(N/2) * N * (x + 1) + N * y + z]
+                                  + u_old[(N/2) * N * x + N * (y - 1) + z] + u_old[(N/2) * N * x + N * (y + 1) + z]
+                                  + u_old[(N/2) * N * x + N * y + (z - 1)] + u_old[(N/2) * N * x + N * y + (z + 1)]
                                   + delta_2 * f[N/2 * N * x + N * y + z]) * div_val;
     }
-    else if (x == 0 && y>0 && z>0 && y<N-1 && z<N-1) { // border
-        u[N * N * x + N * y + z] = (u_old_[N/2 * N * (N/2-1) + N * y + z] + u_old[N/2 * N * (x + 1) + N * y + z]
-                                  + u_old[N/2 * N * x + N * (y - 1) + z] + u_old[N/2 * N * x + N * (y + 1) + z]
-                                  + u_old[N/2 * N * x + N * y + (z - 1)] + u_old[N/2 * N * x + N * y + (z + 1)]
+    else if ((x == 0) && (y>0) && (z>0) && (y<N-1) && (z<N-1)) { // border
+        u[N * N * x + N * y + z] = (u_old_[(N/2) * N * ((N/2)-1) + N * y + z] + u_old[(N/2) * N * (x + 1) + N * y + z]
+                                  + u_old[(N/2) * N * x + N * (y - 1) + z] + u_old[(N/2) * N * x + N * (y + 1) + z]
+                                  + u_old[(N/2) * N * x + N * y + (z - 1)] + u_old[(N/2) * N * x + N * y + (z + 1)]
                                   + delta_2 * f[N/2 * N * x + N * y + z]) * div_val;
     }
 }
@@ -100,14 +100,14 @@ void gpu_jacobi_31(double *u, double *u_old, double *f, int N,int delta_2, doubl
     int y = blockIdx.y * blockDim.y + threadIdx.y;
     int z = blockIdx.z * blockDim.z + threadIdx.z;
 
-    if (x>0 && y>0 && z>0 && x<(N/2-1) && y<N-1 && z<N-1){ // inside the half cube
+    if ((x>0) && (y>0) && (z>0) && (x<((N/2)-1)) && (y<N-1) && (z<N-1)){ // inside the upper half cube
         u[N * N * x + N * y + z] = (u_old[N/2 * N * (x - 1) + N * y + z] + u_old[N/2 * N * (x + 1) + N * y + z]
                                   + u_old[N/2 * N * x + N * (y - 1) + z] + u_old[N/2 * N * x + N * (y + 1) + z]
                                   + u_old[N/2 * N * x + N * y + (z - 1)] + u_old[N/2 * N * x + N * y + (z + 1)]
                                   + delta_2 * f[N/2 * N * x + N * y + z]) * div_val;
     }
-    else if (x == N/2-1 && y>0 && z>0 && y<N-1 && z<N-1) { // border
-        u[N * N * x + N * y + z] = (u_old[N/2 * N * (x - 1) + N * y + z] + u_old_[N/2 * N * (0) + N * y + z]
+    else if ((x == ((N/2)-1)) && (y>0) && (z>0) && (y<N-1) && (z<N-1)) { // border
+        u[N * N * x + N * y + z] = (u_old[N/2 * N * (x - 1) + N * y + z] + u_old_[N/2 * N * 0 + N * y + z]
                                   + u_old[N/2 * N * x + N * (y - 1) + z] + u_old[N/2 * N * x + N * (y + 1) + z]
                                   + u_old[N/2 * N * x + N * y + (z - 1)] + u_old[N/2 * N * x + N * y + (z + 1)]
                                   + delta_2 * f[N/2 * N * x + N * y + z]) * div_val;
