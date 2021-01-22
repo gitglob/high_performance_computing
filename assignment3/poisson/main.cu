@@ -64,10 +64,10 @@ int main(int argc, char *argv[]) {
     double start_time, end_time;
 
     start_time = omp_get_wtime();
-    while (*iter < iter_max) {
+    while (iter < iter_max) {
         gpu_jacobi_1<<<1, 1>>>(u_gpu, u_old_gpu, f_gpu, N, temp_pointer, delta_2, div_val);
         checkCudaErrors(cudaDeviceSynchronize());
-        (*iter)++;
+        iter++;
     }
 
     end_time = omp_get_wtime();
