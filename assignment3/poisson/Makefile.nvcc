@@ -38,3 +38,4 @@ init.o: init.h
 transfer3d_gpu.o: transfer3d_gpu.h
 alloc3d_gpu.o: alloc3d_gpu.h
 alloc3d.o: alloc3d.h
+print.o: print.h
