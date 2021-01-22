@@ -4,6 +4,25 @@
 #define BLOCK_SIZE 8
 
 __global__
+void gpu_jacobi_1(double ***u, double ***u_old, double ***f, int N, double ***temp_pointer, int delta_2, double div_val) {
+    int i, j, k;
+    for (i = 1; i < N - 1; ++i) {
+        for (j = 1; j < N - 1; ++j) {
+            for (k = 1; k < N - 1; ++k) {
+                u[i][j][k] =  (u_old[i - 1][j][k] + u_old[i + 1][j][k]
+                         + u_old[i][j - 1][k] + u_old[i][j + 1][k]
+                         + u_old[i][j][k - 1] + u_old[i][j][k + 1]
+                         + delta_2 * f[i][j][k]) * div_val;
+            }
+        }
+    }
+
+    temp_pointer = u;
+    u = u_old;
+    u_old = temp_pointer;
+}
+
+__global__
 void gpu_jacobi_2(double *u, double *u_old, double *f, int N, int delta_2, double div_val) {
 
     int x = blockIdx.x * blockDim.x + threadIdx.x;
